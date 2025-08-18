@@ -37,17 +37,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
           // Fetch user profile
           setTimeout(async () => {
-            const { data: profile } = await supabase
+            console.log('Fetching profile for user:', session.user.id);
+            const { data: profile, error } = await supabase
               .from('profiles')
               .select('*')
               .eq('user_id', session.user.id)
-              .single();
+              .maybeSingle();
+            
+            if (error) {
+              console.error('Error fetching profile:', error);
+            } else {
+              console.log('Profile fetched:', profile);
+            }
             
             setProfile(profile as Profile);
             setLoading(false);
@@ -72,13 +80,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    console.log('Attempting sign in for:', email);
+    
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
-    // Não navegue aqui - deixe o componente Auth lidar com isso
-    
+    if (error) {
+      console.error('SignIn error:', error.message);
+    } else {
+      console.log('SignIn successful:', data.user?.email);
+    }
     
     return { error };
   };
