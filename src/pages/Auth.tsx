@@ -56,19 +56,27 @@ export default function Auth() {
     const password = formData.get('password') as string;
     const fullName = formData.get('fullName') as string;
 
-    const { error } = await signUp(email, password, fullName);
+    const { error, data } = await signUp(email, password, fullName);
     
     if (error) {
+      console.error('Signup error details:', error);
       toast({
         title: "Erro no cadastro",
-        description: error.message,
+        description: error.message || "Erro desconhecido durante o cadastro",
         variant: "destructive",
       });
     } else {
-      toast({
-        title: "Cadastro realizado!",
-        description: "Verifique seu email para confirmar a conta.",
-      });
+      if (data?.user && !data.user.email_confirmed_at) {
+        toast({
+          title: "Cadastro realizado!",
+          description: "Verifique seu email para confirmar a conta e fazer login.",
+        });
+      } else {
+        toast({
+          title: "Cadastro realizado!",
+          description: "Sua conta foi criada com sucesso.",
+        });
+      }
     }
     
     setIsLoading(false);
