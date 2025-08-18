@@ -6,17 +6,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import romantechLogo from "@/assets/romantech-logo.png";
 export function Header() {
   return (
     <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="bg-black px-3 py-2 rounded">
+          <div className="bg-romantech-black px-3 py-2 rounded">
             <img
-              src="https://imgur.com/a/UuaWot7" // substitua pelo link direto
+              src={romantechLogo}
               alt="Romantech Logo"
-              className="h-10 w-auto"
-              />
+              className="h-8 w-auto"
+            />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">PPCI Manager</h1>
