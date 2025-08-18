@@ -9,6 +9,7 @@ import {
 import { StatusCard } from "@/components/dashboard/StatusCard";
 import { RecentActivities } from "@/components/dashboard/RecentActivities";
 import { Layout } from "@/components/layout/Layout";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const equipmentData = [
   {
@@ -51,54 +52,56 @@ const equipmentData = [
 
 export default function Dashboard() {
   return (
-    <Layout>
-      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-            <p className="text-muted-foreground">
-              Visão geral do sistema de prevenção contra incêndio
-            </p>
+    <ProtectedRoute>
+      <Layout>
+        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+          <div className="flex items-center justify-between space-y-2">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+              <p className="text-muted-foreground">
+                Visão geral do sistema de prevenção contra incêndio
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {equipmentData.map((equipment) => (
-            <StatusCard
-              key={equipment.title}
-              title={equipment.title}
-              icon={equipment.icon}
-              counts={equipment.counts}
-              total={equipment.total}
-            />
-          ))}
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <RecentActivities />
-          <div className="col-span-3">
-            <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">Resumo do Sistema</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Equipamentos Ativos</span>
-                  <span className="font-medium">300</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Manutenções Pendentes</span>
-                  <span className="font-medium text-warning">23</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Itens Vencidos</span>
-                  <span className="font-medium text-destructive">11</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Eficiência Geral</span>
-                  <span className="font-medium text-success">96.3%</span>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {equipmentData.map((equipment) => (
+              <StatusCard
+                key={equipment.title}
+                title={equipment.title}
+                icon={equipment.icon}
+                counts={equipment.counts}
+                total={equipment.total}
+              />
+            ))}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <RecentActivities />
+            <div className="col-span-3">
+              <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
+                <h3 className="text-lg font-semibold mb-4">Resumo do Sistema</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Equipamentos Ativos</span>
+                    <span className="font-medium">300</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Manutenções Pendentes</span>
+                    <span className="font-medium text-warning">23</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Itens Vencidos</span>
+                    <span className="font-medium text-destructive">11</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Eficiência Geral</span>
+                    <span className="font-medium text-success">96.3%</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
+      </Layout>
+    </ProtectedRoute>
   );
 }
