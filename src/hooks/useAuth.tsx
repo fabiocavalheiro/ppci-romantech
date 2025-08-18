@@ -9,7 +9,7 @@ interface Profile {
   full_name: string;
   email: string;
   phone?: string;
-  role: 'admin' | 'cliente' | 'tecnico';
+  role: string;
   active: boolean;
 }
 
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .eq('user_id', session.user.id)
               .single();
             
-            setProfile(profile);
+            setProfile(profile as Profile);
             setLoading(false);
           }, 0);
         } else {
@@ -97,6 +97,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     });
+    
+    // Se o cadastro foi bem-sucedido e o usuário foi criado, criar o perfil manualmente
+    if (!error && data.user) {
+      try {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: data.user.id,
+            full_name: fullName,
+            email: email,
+            role: 'cliente'
+          });
+        
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
+      } catch (profileError) {
+        console.error('Error creating profile:', profileError);
+      }
+    }
     
     if (error) {
       console.error('SignUp error:', error.message);
