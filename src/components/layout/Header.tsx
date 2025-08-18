@@ -12,8 +12,11 @@ export function Header() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="bg-black px-3 py-2 rounded">
-            <span className="text-white font-bold text-xl">R</span>
-            <span className="text-primary font-bold text-xl">ROMANTECH</span>
+            <img
+              src="https://imgur.com/a/UuaWot7" // substitua pelo link direto
+              alt="Romantech Logo"
+              className="h-10 w-auto"
+              />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">PPCI Manager</h1>
