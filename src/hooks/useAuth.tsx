@@ -77,9 +77,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
     });
     
-    if (!error) {
-      navigate('/dashboard');
-    }
+    // Não navegue aqui - deixe o componente Auth lidar com isso
+    
     
     return { error };
   };
