@@ -52,6 +52,16 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				status: {
+					ok: 'hsl(var(--status-ok))',
+					warning: 'hsl(var(--status-warning))',
+					danger: 'hsl(var(--status-danger))'
+				},
+				ppci: {
+					primary: 'hsl(var(--ppci-primary))',
+					secondary: 'hsl(var(--ppci-secondary))',
+					accent: 'hsl(var(--ppci-accent))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
