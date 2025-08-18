@@ -9,76 +9,91 @@ import {
   Settings,
   Users
 } from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface SidebarProps {
   className?: string;
 }
 
-const navigation = [
+const allNavigation = [
   {
     name: "Dashboard",
-    href: "/",
+    href: "/dashboard",
     icon: LayoutDashboard,
-    current: true
+    roles: ["admin", "cliente", "tecnico"]
   },
   {
     name: "Calendário",
     href: "/calendario",
     icon: Calendar,
-    current: false
+    roles: ["admin", "cliente", "tecnico"]
   },
   {
     name: "Relatórios",
     href: "/relatorios",
     icon: FileText,
-    current: false
+    roles: ["admin", "cliente", "tecnico"]
   },
   {
     name: "Clientes",
     href: "/clientes",
     icon: Building2,
-    current: false
+    roles: ["admin", "tecnico"]
   },
   {
     name: "Locais",
     href: "/locais",
     icon: MapPin,
-    current: false
+    roles: ["admin", "cliente", "tecnico"]
   },
   {
     name: "Usuários",
     href: "/usuarios",
     icon: Users,
-    current: false
+    roles: ["admin"]
   },
   {
     name: "Configurações",
     href: "/configuracoes",
     icon: Settings,
-    current: false
+    roles: ["admin", "cliente", "tecnico"]
   }
 ];
 
 export function Sidebar({ className }: SidebarProps) {
+  const location = useLocation();
+  const { profile } = useAuth();
+
+  const navigation = allNavigation.filter(item => 
+    profile && item.roles.includes(profile.role)
+  );
+
   return (
-    <div className={cn("pb-12 w-64", className)}>
+    <div className={cn("pb-12 w-64 border-r bg-card", className)}>
       <div className="space-y-4 py-4">
         <div className="px-3 py-2">
           <div className="space-y-1">
             <nav className="space-y-2">
-              {navigation.map((item) => (
-                <Button
-                  key={item.name}
-                  variant={item.current ? "secondary" : "ghost"}
-                  className={cn(
-                    "w-full justify-start",
-                    item.current && "bg-secondary text-secondary-foreground"
-                  )}
-                >
-                  <item.icon className="mr-2 h-4 w-4" />
-                  {item.name}
-                </Button>
-              ))}
+              {navigation.map((item) => {
+                const isActive = location.pathname === item.href;
+                return (
+                  <Button
+                    key={item.name}
+                    variant={isActive ? "secondary" : "ghost"}
+                    className={cn(
+                      "w-full justify-start",
+                      isActive && "bg-secondary text-secondary-foreground"
+                    )}
+                    asChild
+                  >
+                    <NavLink to={item.href}>
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {item.name}
+                    </NavLink>
+                  </Button>
+                );
+              })}
             </nav>
           </div>
         </div>

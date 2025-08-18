@@ -14,16 +14,445 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      alarms: {
+        Row: {
+          created_at: string
+          id: string
+          last_maintenance: string | null
+          location_id: string
+          maintenance_frequency_months: number
+          next_maintenance: string | null
+          serial_number: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at: string
+          zone: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          serial_number: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at?: string
+          zone: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id?: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          serial_number?: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type?: string
+          updated_at?: string
+          zone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alarms_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brigade_members: {
+        Row: {
+          active: boolean
+          cpf: string
+          created_at: string
+          id: string
+          last_training: string | null
+          location_id: string
+          name: string
+          next_training: string | null
+          role: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          training_frequency_months: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          cpf: string
+          created_at?: string
+          id?: string
+          last_training?: string | null
+          location_id: string
+          name: string
+          next_training?: string | null
+          role: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          training_frequency_months?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          cpf?: string
+          created_at?: string
+          id?: string
+          last_training?: string | null
+          location_id?: string
+          name?: string
+          next_training?: string | null
+          role?: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          training_frequency_months?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brigade_members_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients: {
+        Row: {
+          active: boolean
+          address: Json | null
+          cnpj: string | null
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: Json | null
+          cnpj?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: Json | null
+          cnpj?: string | null
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      emergency_lighting: {
+        Row: {
+          created_at: string
+          id: string
+          last_maintenance: string | null
+          location_id: string
+          maintenance_frequency_months: number
+          next_maintenance: string | null
+          serial_number: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at: string
+          zone: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          serial_number: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at?: string
+          zone: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id?: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          serial_number?: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type?: string
+          updated_at?: string
+          zone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_lighting_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fire_extinguishers: {
+        Row: {
+          capacity: string
+          created_at: string
+          id: string
+          last_maintenance: string | null
+          location_id: string
+          maintenance_frequency_months: number
+          manufacture_date: string
+          next_maintenance: string | null
+          serial_number: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          capacity: string
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id: string
+          maintenance_frequency_months?: number
+          manufacture_date: string
+          next_maintenance?: string | null
+          serial_number: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id?: string
+          maintenance_frequency_months?: number
+          manufacture_date?: string
+          next_maintenance?: string | null
+          serial_number?: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fire_extinguishers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hydrants: {
+        Row: {
+          created_at: string
+          id: string
+          last_maintenance: string | null
+          location_id: string
+          maintenance_frequency_months: number
+          next_maintenance: string | null
+          pressure_rating: string | null
+          serial_number: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          pressure_rating?: string | null
+          serial_number: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id?: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          pressure_rating?: string | null
+          serial_number?: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hydrants_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          active: boolean
+          address: string
+          client_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address: string
+          client_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "locations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          active: boolean
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sprinklers: {
+        Row: {
+          created_at: string
+          id: string
+          last_maintenance: string | null
+          location_id: string
+          maintenance_frequency_months: number
+          next_maintenance: string | null
+          serial_number: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at: string
+          zone: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          serial_number: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type: string
+          updated_at?: string
+          zone: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_maintenance?: string | null
+          location_id?: string
+          maintenance_frequency_months?: number
+          next_maintenance?: string | null
+          serial_number?: string
+          status?: Database["public"]["Enums"]["equipment_status"]
+          type?: string
+          updated_at?: string
+          zone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprinklers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_client_ids: {
+        Args: { user_id: string }
+        Returns: string[]
+      }
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
     }
     Enums: {
-      [_ in never]: never
+      equipment_status: "ok" | "warning" | "danger" | "expired"
+      user_role: "admin" | "cliente" | "tecnico"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +579,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      equipment_status: ["ok", "warning", "danger", "expired"],
+      user_role: ["admin", "cliente", "tecnico"],
+    },
   },
 } as const

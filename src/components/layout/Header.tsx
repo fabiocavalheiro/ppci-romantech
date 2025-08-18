@@ -1,13 +1,33 @@
-import { Bell, User } from "lucide-react";
+import { Bell, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import romantechLogo from "@/assets/romantech-logo.png";
+import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "react-router-dom";
+
+const routeTitles: Record<string, string> = {
+  '/dashboard': 'Dashboard',
+  '/calendario': 'Calendário',
+  '/relatorios': 'Relatórios',
+  '/clientes': 'Clientes',
+  '/locais': 'Locais',
+  '/usuarios': 'Usuários',
+  '/configuracoes': 'Configurações',
+};
+
 export function Header() {
+  const { profile, signOut } = useAuth();
+  const location = useLocation();
+  
+  const currentTitle = routeTitles[location.pathname] || 'Dashboard';
+
   return (
     <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
@@ -20,8 +40,8 @@ export function Header() {
             />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">PPCI Manager</h1>
-            <p className="text-sm text-muted-foreground">Sistema de Gestão de Manutenção</p>
+            <h1 className="text-2xl font-bold text-foreground">{currentTitle}</h1>
+            <p className="text-sm text-muted-foreground">Sistema de Gestão PPCI</p>
           </div>
         </div>
         
@@ -37,9 +57,18 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-popover">
-              <DropdownMenuItem>Perfil</DropdownMenuItem>
-              <DropdownMenuItem>Configurações</DropdownMenuItem>
-              <DropdownMenuItem>Sair</DropdownMenuItem>
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{profile?.full_name}</p>
+                  <p className="text-xs text-muted-foreground">{profile?.email}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{profile?.role}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={signOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
