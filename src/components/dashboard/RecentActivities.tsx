@@ -74,7 +74,7 @@ const getStatusBadge = (status: string) => {
 
 export function RecentActivities() {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Clock className="h-5 w-5 text-primary" />
@@ -82,18 +82,20 @@ export function RecentActivities() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {recentActivities.map((activity) => (
-            <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg bg-muted/50">
-              {getStatusIcon(activity.status)}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+            <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors">
+              <div className="flex-shrink-0 mt-0.5">
+                {getStatusIcon(activity.status)}
+              </div>
+              <div className="flex-1 min-w-0 space-y-1">
+                <p className="text-sm font-medium text-foreground line-clamp-2">
                   {activity.type}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground line-clamp-1">
                   {activity.location}
                 </p>
-                <div className="flex items-center justify-between mt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <span className="text-xs text-muted-foreground">
                     {activity.technician} • {new Date(activity.date).toLocaleDateString('pt-BR')}
                   </span>
