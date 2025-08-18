@@ -6,17 +6,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import romantechLogo from "@/assets/romantech-logo.png";
 
 export function Header() {
   return (
     <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <img src={romantechLogo} alt="Romantech PPCI" className="h-10 w-auto" />
+          <div className="bg-primary text-primary-foreground px-3 py-2 rounded font-bold text-lg">
+            R
+          </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">PPCI Manager</h1>
-            <p className="text-sm text-muted-foreground">Sistema de Gestão de Manutenção</p>
+            <h1 className="text-2xl font-bold text-foreground">ROMANTECH</h1>
+            <p className="text-sm text-muted-foreground">PPCI e Segurança do Trabalho</p>
           </div>
         </div>
         
