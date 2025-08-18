@@ -1,4 +1,4 @@
-import { Shield, Bell, User } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,13 +6,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import romantechLogo from "@/assets/romantech-logo.png";
 
 export function Header() {
   return (
     <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <Shield className="h-8 w-8 text-primary" />
+          <img src={romantechLogo} alt="Romantech PPCI" className="h-10 w-auto" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">PPCI Manager</h1>
             <p className="text-sm text-muted-foreground">Sistema de Gestão de Manutenção</p>

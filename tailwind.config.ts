@@ -57,10 +57,11 @@ export default {
 					warning: 'hsl(var(--status-warning))',
 					danger: 'hsl(var(--status-danger))'
 				},
-				ppci: {
-					primary: 'hsl(var(--ppci-primary))',
-					secondary: 'hsl(var(--ppci-secondary))',
-					accent: 'hsl(var(--ppci-accent))'
+				romantech: {
+					orange: 'hsl(var(--romantech-orange))',
+					black: 'hsl(var(--romantech-black))',
+					white: 'hsl(var(--romantech-white))',
+					gray: 'hsl(var(--romantech-gray))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
