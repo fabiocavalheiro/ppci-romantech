@@ -502,6 +502,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      get_user_role_temp: {
+        Args: { user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       equipment_status: "ok" | "warning" | "danger" | "expired"
