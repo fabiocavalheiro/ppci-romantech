@@ -13,11 +13,18 @@ interface StatusCardProps {
   icon: LucideIcon;
   counts: StatusCount;
   total: number;
+  onClick?: () => void;
 }
 
-export function StatusCard({ title, icon: Icon, counts, total }: StatusCardProps) {
+export function StatusCard({ title, icon: Icon, counts, total, onClick }: StatusCardProps) {
   return (
-    <Card className="relative overflow-hidden hover:shadow-md transition-shadow">
+    <Card 
+      className={cn(
+        "relative overflow-hidden hover:shadow-md transition-all duration-200",
+        onClick && "cursor-pointer hover:scale-[1.02] hover:border-primary/20"
+      )}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-foreground">{title}</CardTitle>
         <Icon className="h-6 w-6 text-primary flex-shrink-0" />

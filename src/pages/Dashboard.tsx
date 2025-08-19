@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { 
   Shield, 
   Droplet, 
@@ -8,49 +9,83 @@ import {
 } from "lucide-react";
 import { StatusCard } from "@/components/dashboard/StatusCard";
 import { RecentActivities } from "@/components/dashboard/RecentActivities";
+import { EquipmentEditDialog } from "@/components/dashboard/EquipmentEditDialog";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
-const equipmentData = [
-  {
-    title: "Extintores",
-    icon: Shield,
-    counts: { ok: 45, warning: 8, danger: 2 },
-    total: 55
-  },
-  {
-    title: "Hidrantes",
-    icon: Droplet,
-    counts: { ok: 12, warning: 3, danger: 1 },
-    total: 16
-  },
-  {
-    title: "Brigadistas",
-    icon: Users,
-    counts: { ok: 28, warning: 5, danger: 0 },
-    total: 33
-  },
-  {
-    title: "Sprinklers",
-    icon: Sprout,
-    counts: { ok: 84, warning: 12, danger: 4 },
-    total: 100
-  },
-  {
-    title: "Alarmes",
-    icon: AlertTriangle,
-    counts: { ok: 15, warning: 2, danger: 1 },
-    total: 18
-  },
-  {
-    title: "Iluminação",
-    icon: Lightbulb,
-    counts: { ok: 67, warning: 8, danger: 3 },
-    total: 78
-  }
-];
 
 export default function Dashboard() {
+  const [equipmentData, setEquipmentData] = useState([
+    {
+      title: "Extintores",
+      icon: Shield,
+      counts: { ok: 45, warning: 8, danger: 2 },
+      total: 55
+    },
+    {
+      title: "Hidrantes",
+      icon: Droplet,
+      counts: { ok: 12, warning: 3, danger: 1 },
+      total: 16
+    },
+    {
+      title: "Brigadistas",
+      icon: Users,
+      counts: { ok: 28, warning: 5, danger: 0 },
+      total: 33
+    },
+    {
+      title: "Sprinklers",
+      icon: Sprout,
+      counts: { ok: 84, warning: 12, danger: 4 },
+      total: 100
+    },
+    {
+      title: "Alarmes",
+      icon: AlertTriangle,
+      counts: { ok: 15, warning: 2, danger: 1 },
+      total: 18
+    },
+    {
+      title: "Iluminação",
+      icon: Lightbulb,
+      counts: { ok: 67, warning: 8, danger: 3 },
+      total: 78
+    }
+  ]);
+
+  const [editingEquipment, setEditingEquipment] = useState<{
+    index: number;
+    data: {
+      title: string;
+      counts: { ok: number; warning: number; danger: number };
+      total: number;
+    };
+  } | null>(null);
+
+  const handleCardClick = (index: number) => {
+    setEditingEquipment({
+      index,
+      data: equipmentData[index]
+    });
+  };
+
+  const handleSaveEquipment = (updatedData: {
+    title: string;
+    counts: { ok: number; warning: number; danger: number };
+    total: number;
+  }) => {
+    if (editingEquipment) {
+      const newEquipmentData = [...equipmentData];
+      newEquipmentData[editingEquipment.index] = {
+        ...newEquipmentData[editingEquipment.index],
+        counts: updatedData.counts,
+        total: updatedData.total
+      };
+      setEquipmentData(newEquipmentData);
+    }
+  };
+
   return (
     <ProtectedRoute>
       <Layout>
@@ -65,13 +100,14 @@ export default function Dashboard() {
           
           {/* Equipment Status Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {equipmentData.map((equipment) => (
+            {equipmentData.map((equipment, index) => (
               <StatusCard
                 key={equipment.title}
                 title={equipment.title}
                 icon={equipment.icon}
                 counts={equipment.counts}
                 total={equipment.total}
+                onClick={() => handleCardClick(index)}
               />
             ))}
           </div>
@@ -108,6 +144,16 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* Equipment Edit Dialog */}
+          {editingEquipment && (
+            <EquipmentEditDialog
+              isOpen={!!editingEquipment}
+              onClose={() => setEditingEquipment(null)}
+              equipmentData={editingEquipment.data}
+              onSave={handleSaveEquipment}
+            />
+          )}
         </div>
       </Layout>
     </ProtectedRoute>
