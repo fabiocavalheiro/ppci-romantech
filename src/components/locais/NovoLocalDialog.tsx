@@ -79,6 +79,7 @@ export function NovoLocalDialog({
   const loadClients = async () => {
     setLoading(true);
     try {
+      console.log('Carregando clientes...');
       const { data, error } = await supabase
         .from('clients')
         .select('id, name')
@@ -86,6 +87,7 @@ export function NovoLocalDialog({
         .order('name');
 
       if (error) throw error;
+      console.log('Clientes carregados:', data);
       setClients(data || []);
     } catch (error) {
       console.error('Erro ao carregar clientes:', error);
@@ -164,19 +166,30 @@ export function NovoLocalDialog({
                     <FormLabel>Cliente *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-background">
                           <SelectValue placeholder="Selecione um cliente" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        {clients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>
-                            {client.name}
+                      <SelectContent className="bg-background border shadow-lg z-50">
+                        {clients.length === 0 ? (
+                          <SelectItem value="no-clients" disabled>
+                            Nenhum cliente encontrado
                           </SelectItem>
-                        ))}
+                        ) : (
+                          clients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>
+                              {client.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                    {clients.length === 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        É necessário ter pelo menos um cliente cadastrado para criar um local.
+                      </p>
+                    )}
                   </FormItem>
                 )}
               />
