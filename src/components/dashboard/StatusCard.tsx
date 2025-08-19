@@ -49,6 +49,7 @@ export function StatusCard({ title, icon: Icon, counts, total, onClick, onWarnin
               onWarningClick && counts.warning > 0 && "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 transition-colors"
             )}
             onClick={(e) => {
+              console.log('Warning click triggered', { onWarningClick: !!onWarningClick, warningCount: counts.warning });
               if (onWarningClick && counts.warning > 0) {
                 e.stopPropagation();
                 onWarningClick();
@@ -68,6 +69,7 @@ export function StatusCard({ title, icon: Icon, counts, total, onClick, onWarnin
               onDangerClick && counts.danger > 0 && "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 transition-colors"
             )}
             onClick={(e) => {
+              console.log('Danger click triggered', { onDangerClick: !!onDangerClick, dangerCount: counts.danger });
               if (onDangerClick && counts.danger > 0) {
                 e.stopPropagation();
                 onDangerClick();
