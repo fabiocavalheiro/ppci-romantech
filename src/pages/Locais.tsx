@@ -53,6 +53,8 @@ export default function Locais() {
   const loadLocais = async () => {
     setLoading(true);
     try {
+      console.log('Carregando locais...');
+      
       // Carregar locais
       const { data: locaisData, error: locaisError } = await supabase
         .from('locations')
@@ -60,15 +62,22 @@ export default function Locais() {
         .eq('active', true)
         .order('name');
 
+      console.log('Locais carregados:', locaisData);
+      console.log('Erro nos locais:', locaisError);
+
       if (locaisError) throw locaisError;
 
       // Carregar contadores de extintores para cada local
       const locaisWithCounts = await Promise.all(
-        locaisData.map(async (local) => {
+        (locaisData || []).map(async (local) => {
+          console.log('Carregando extintores para local:', local.name);
+          
           const { data: extintoresData, error: extintoresError } = await supabase
             .from('extintores')
             .select('status')
             .eq('local_id', local.id);
+
+          console.log(`Extintores para ${local.name}:`, extintoresData);
 
           if (extintoresError) {
             console.error('Erro ao carregar extintores:', extintoresError);
@@ -79,16 +88,17 @@ export default function Locais() {
           }
 
           const counts = {
-            total: extintoresData.length,
-            ok: extintoresData.filter(e => e.status === 'ok').length,
-            warning: extintoresData.filter(e => e.status === 'warning').length,
-            danger: extintoresData.filter(e => e.status === 'danger' || e.status === 'expired').length,
+            total: extintoresData?.length || 0,
+            ok: extintoresData?.filter(e => e.status === 'ok').length || 0,
+            warning: extintoresData?.filter(e => e.status === 'warning').length || 0,
+            danger: extintoresData?.filter(e => e.status === 'danger' || e.status === 'expired').length || 0,
           };
 
           return { ...local, extintores: counts };
         })
       );
 
+      console.log('Locais com contadores:', locaisWithCounts);
       setLocais(locaisWithCounts);
     } catch (error: any) {
       console.error('Erro ao carregar locais:', error);
