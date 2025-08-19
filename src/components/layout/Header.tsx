@@ -87,7 +87,7 @@ export function Header() {
             <img 
               src={settings.logo_url} 
               alt={settings.company_name || "RomanTech"} 
-              className="h-8 w-auto max-w-40 object-contain"
+              className="h-16 w-auto max-w-40 object-contain"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = romanTechLogo;
               }}
@@ -96,7 +96,7 @@ export function Header() {
             <img 
               src={romanTechLogo} 
               alt="RomanTech" 
-              className="h-8 w-auto"
+              className="h-16 w-auto"
             />
           )}
         </div>
@@ -107,7 +107,7 @@ export function Header() {
             <img 
               src={settings.logo_url} 
               alt={settings.company_name || "RomanTech"} 
-              className="h-7 w-auto max-w-32 object-contain"
+              className="h-14 w-auto max-w-32 object-contain"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = romanTechLogo;
               }}
@@ -116,7 +116,7 @@ export function Header() {
             <img 
               src={romanTechLogo} 
               alt="RomanTech" 
-              className="h-7 w-auto"
+              className="h-14 w-auto"
             />
           )}
         </div>
