@@ -114,6 +114,8 @@ export function NovoLocalDialog({
   const onSubmit = async (data: LocalFormData) => {
     setSaving(true);
     try {
+      console.log('Criando local com dados:', data);
+      
       const { error } = await supabase
         .from('locations')
         .insert({
@@ -124,7 +126,12 @@ export function NovoLocalDialog({
           active: true,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro ao criar local:', error);
+        throw error;
+      }
+
+      console.log('Local criado com sucesso');
 
       toast({
         title: "Sucesso",
@@ -134,6 +141,11 @@ export function NovoLocalDialog({
       form.reset();
       onSuccess();
       onClose();
+      
+      // Forçar recarga da página para garantir que os dados apareçam
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error: any) {
       console.error('Erro ao criar local:', error);
       toast({
