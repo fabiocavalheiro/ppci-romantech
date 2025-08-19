@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, MapPin, Edit } from "lucide-react";
+import { Plus, MapPin, Edit, Trash2 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,16 @@ import {
 } from "@/components/ui/table";
 import { ExtintoresEditDialog } from "@/components/dashboard/ExtintoresEditDialog";
 import { NovoLocalDialog } from "@/components/locais/NovoLocalDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -45,6 +55,7 @@ export default function Locais() {
   } | null>(null);
 
   const [showNovoLocal, setShowNovoLocal] = useState(false);
+  const [localToDelete, setLocalToDelete] = useState<Local | null>(null);
 
   useEffect(() => {
     loadLocais();
@@ -128,6 +139,54 @@ export default function Locais() {
   const handleNovoLocalSuccess = () => {
     // Recarregar locais após criar novo
     loadLocais();
+  };
+
+  const handleDeleteLocal = async () => {
+    if (!localToDelete) return;
+
+    try {
+      // Primeiro verificar se há extintores associados ao local
+      const { data: extintores, error: extintoresError } = await supabase
+        .from('extintores')
+        .select('id')
+        .eq('local_id', localToDelete.id);
+
+      if (extintoresError) throw extintoresError;
+
+      if (extintores && extintores.length > 0) {
+        toast({
+          title: "Erro",
+          description: `Não é possível excluir o local "${localToDelete.name}" pois há ${extintores.length} extintor(es) associado(s). Remova os extintores primeiro.`,
+          variant: "destructive",
+        });
+        setLocalToDelete(null);
+        return;
+      }
+
+      // Se não há extintores, proceder com a exclusão
+      const { error } = await supabase
+        .from('locations')
+        .delete()
+        .eq('id', localToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Sucesso",
+        description: `Local "${localToDelete.name}" excluído com sucesso.`,
+      });
+
+      setLocalToDelete(null);
+      loadLocais();
+    } catch (error: any) {
+      console.error('Erro ao excluir local:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir o local.",
+        variant: "destructive",
+      });
+      setLocalToDelete(null);
+    }
   };
 
   if (loading) {
@@ -272,15 +331,26 @@ export default function Locais() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditExtintores(local)}
-                            className="flex items-center gap-2"
-                          >
-                            <Edit className="h-4 w-4" />
-                            Extintores
-                          </Button>
+                          <div className="flex items-center justify-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditExtintores(local)}
+                              className="flex items-center gap-2"
+                            >
+                              <Edit className="h-4 w-4" />
+                              Extintores
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setLocalToDelete(local)}
+                              className="flex items-center gap-2 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Excluir
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -313,6 +383,33 @@ export default function Locais() {
             onClose={() => setShowNovoLocal(false)}
             onSuccess={handleNovoLocalSuccess}
           />
+
+          {/* Dialog de Confirmação de Exclusão */}
+          <AlertDialog open={!!localToDelete} onOpenChange={() => setLocalToDelete(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Tem certeza que deseja excluir o local "{localToDelete?.name}"? 
+                  Esta ação não pode ser desfeita.
+                  {localToDelete && (
+                    <div className="mt-2 text-sm">
+                      <strong>Endereço:</strong> {localToDelete.address}
+                    </div>
+                  )}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteLocal}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Excluir
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </Layout>
     </ProtectedRoute>
