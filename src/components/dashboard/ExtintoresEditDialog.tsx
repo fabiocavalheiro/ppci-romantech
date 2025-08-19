@@ -128,9 +128,8 @@ export function ExtintoresEditDialog({
   };
 
   const handleAddExtintor = () => {
-    const maxNumero = Math.max(0, ...extintores.map(e => e.numero));
     const newExtintor: Extintor = {
-      numero: maxNumero + 1,
+      numero: 1, // Valor inicial, mas será editável
       tipo: 'ABC',
       status: 'ok',
       isNew: true,
@@ -284,7 +283,7 @@ export function ExtintoresEditDialog({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-16">#</TableHead>
+                    <TableHead className="w-20">Número</TableHead>
                     <TableHead className="w-24">Tipo</TableHead>
                     <TableHead className="w-24">Status</TableHead>
                     <TableHead>Localização</TableHead>
@@ -298,7 +297,16 @@ export function ExtintoresEditDialog({
                 <TableBody>
                   {extintores.map((extintor, index) => (
                     <TableRow key={`${extintor.id || 'new'}-${index}`}>
-                      <TableCell className="font-medium">{extintor.numero}</TableCell>
+                       <TableCell>
+                         <Input
+                           type="number"
+                           value={extintor.numero}
+                           onChange={(e) => handleUpdateExtintor(index, 'numero', parseInt(e.target.value) || 1)}
+                           placeholder="Nº"
+                           min="1"
+                           className="w-16"
+                         />
+                       </TableCell>
                       
                       <TableCell>
                         <Select
