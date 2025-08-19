@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,11 +13,55 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import romanTechLogo from '@/assets/romantech-logo.png';
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Header() {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, isAdmin } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [expiringExtintores, setExpiringExtintores] = useState<any[]>([]);
   
+  useEffect(() => {
+    if (isAdmin()) {
+      loadExpiringExtintores();
+    }
+  }, [isAdmin]);
+
+  const loadExpiringExtintores = async () => {
+    try {
+      const today = new Date();
+      const thirtyDaysFromNow = new Date();
+      thirtyDaysFromNow.setDate(today.getDate() + 30);
+
+      const { data, error } = await supabase
+        .from('extintores')
+        .select(`
+          *,
+          locations:local_id (
+            name,
+            address
+          )
+        `)
+        .or(`proxima_inspecao.lt.${today.toISOString().split('T')[0]},proxima_inspecao.lt.${thirtyDaysFromNow.toISOString().split('T')[0]}`);
+
+      if (error) {
+        console.error('Erro ao carregar extintores:', error);
+        return;
+      }
+
+      if (data) {
+        const expired = data.filter(ext => ext.proxima_inspecao && new Date(ext.proxima_inspecao) < today);
+        const expiring = data.filter(ext => ext.proxima_inspecao && new Date(ext.proxima_inspecao) >= today && new Date(ext.proxima_inspecao) <= thirtyDaysFromNow);
+        
+        const notifications = [...expired, ...expiring];
+        setExpiringExtintores(notifications);
+        setNotificationCount(notifications.length);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar notificações:', error);
+    }
+  };
+
   const handleSignOut = async () => {
     setIsLoggingOut(true);
     try {
@@ -58,14 +102,60 @@ export function Header() {
 
         {/* Right side items */}
         <div className="flex items-center space-x-4">
-          {/* Notifications */}
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-4 w-4" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
-              3
-            </span>
-            <span className="sr-only">Notificações</span>
-          </Button>
+          {/* Notifications - Apenas para Admin */}
+          {isAdmin() && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className="h-4 w-4" />
+                  {notificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-destructive rounded-full text-[10px] font-medium text-destructive-foreground flex items-center justify-center">
+                      {notificationCount > 9 ? '9+' : notificationCount}
+                    </span>
+                  )}
+                  <span className="sr-only">Notificações de extintores</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel>Extintores para Inspeção</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {expiringExtintores.length === 0 ? (
+                  <DropdownMenuItem disabled>
+                    Nenhuma notificação
+                  </DropdownMenuItem>
+                ) : (
+                  expiringExtintores.slice(0, 5).map((extintor) => {
+                    const isExpired = extintor.proxima_inspecao && new Date(extintor.proxima_inspecao) < new Date();
+                    const daysUntilExpiry = extintor.proxima_inspecao 
+                      ? Math.ceil((new Date(extintor.proxima_inspecao).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                      : 0;
+                    
+                    return (
+                      <DropdownMenuItem key={extintor.id} className="flex flex-col items-start p-3">
+                        <div className="font-medium">
+                          Extintor #{extintor.numero} - {extintor.tipo}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {extintor.locations?.name || 'Local não identificado'}
+                        </div>
+                        <div className={`text-xs ${isExpired ? 'text-destructive' : 'text-orange-600'}`}>
+                          {isExpired 
+                            ? `Vencido há ${Math.abs(daysUntilExpiry)} dias`
+                            : `Vence em ${daysUntilExpiry} dias`
+                          }
+                        </div>
+                      </DropdownMenuItem>
+                    );
+                  })
+                )}
+                {expiringExtintores.length > 5 && (
+                  <DropdownMenuItem disabled className="text-center">
+                    +{expiringExtintores.length - 5} mais...
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           {/* User menu */}
           <DropdownMenu>
