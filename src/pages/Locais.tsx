@@ -134,6 +134,7 @@ export default function Locais() {
   const handleCloseDialog = () => {
     setEditingLocal(null);
     // Recarregar locais para atualizar contadores
+    console.log('Dialog fechado, recarregando locais...');
     loadLocais();
   };
 

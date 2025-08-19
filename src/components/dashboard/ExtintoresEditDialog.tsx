@@ -155,7 +155,11 @@ export function ExtintoresEditDialog({
   };
 
   const handleSave = async () => {
-    if (!localId) return;
+    console.log('handleSave iniciado', { localId, extintores: extintores.length });
+    if (!localId) {
+      console.error('localId não encontrado!');
+      return;
+    }
 
     // Validar se todos os extintores têm número
     const extintoresSemNumero = extintores.filter(extintor => 
@@ -206,17 +210,23 @@ export function ExtintoresEditDialog({
           observacoes: extintor.observacoes || null,
         };
 
+        console.log('Processando extintor:', { extintor, data, isNew: extintor.isNew });
+
         if (extintor.id && !extintor.isNew) {
           // Atualizar existente
-          await supabase
+          console.log('Atualizando extintor existente:', extintor.id);
+          const result = await supabase
             .from('extintores')
             .update(data)
             .eq('id', extintor.id);
+          console.log('Resultado update:', result);
         } else {
           // Inserir novo
-          await supabase
+          console.log('Inserindo novo extintor');
+          const result = await supabase
             .from('extintores')
             .insert(data);
+          console.log('Resultado insert:', result);
         }
       }
 
@@ -229,9 +239,21 @@ export function ExtintoresEditDialog({
       // Redirecionar para página de locais seria implementado aqui
     } catch (error: any) {
       console.error('Erro ao salvar extintores:', error);
+      
+      let errorMessage = "Erro ao salvar extintores.";
+      if (error.message) {
+        if (error.message.includes('row-level security policy')) {
+          errorMessage = "Erro de permissão: Você não tem autorização para modificar extintores neste local.";
+        } else if (error.message.includes('duplicate key')) {
+          errorMessage = "Já existe um extintor com este número neste local.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "Erro",
-        description: error.message || "Erro ao salvar extintores.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
