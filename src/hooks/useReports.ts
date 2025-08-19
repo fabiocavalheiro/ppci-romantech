@@ -40,11 +40,19 @@ export const useReports = () => {
         .from('clients')
         .select('id, name')
         .eq('active', true)
-        .neq('name', 'Empresa Exemplo Ltda') // Filtrar empresa de exemplo
         .order('name');
 
       if (error) throw error;
-      setClients(data || []);
+      
+      // Filtrar dados de exemplo no frontend para ter mais controle
+      const filteredClients = (data || []).filter(client => 
+        client.name !== 'Empresa Exemplo Ltda' && 
+        client.name !== 'Empresa Teste' &&
+        !client.name.toLowerCase().includes('exemplo') &&
+        !client.name.toLowerCase().includes('teste')
+      );
+      
+      setClients(filteredClients);
     } catch (error) {
       console.error('Error fetching clients:', error);
       toast({
