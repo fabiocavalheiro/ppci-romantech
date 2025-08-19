@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NovoClienteDialog } from "@/components/clientes/NovoClienteDialog";
 import { EditarClienteDialog } from "@/components/clientes/EditarClienteDialog";
+import { ClienteLocaisManager } from "@/components/clientes/ClienteLocaisManager";
 
 interface Cliente {
   id: string;
@@ -33,6 +34,8 @@ export default function Clientes() {
   const [clienteSelecionado, setClienteSelecionado] = useState<Cliente | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [clienteParaExcluir, setClienteParaExcluir] = useState<Cliente | null>(null);
+  const [locaisManagerOpen, setLocaisManagerOpen] = useState(false);
+  const [clienteParaLocais, setClienteParaLocais] = useState<Cliente | null>(null);
   const { toast } = useToast();
 
   const fetchClientes = async () => {
@@ -119,6 +122,11 @@ export default function Clientes() {
     }
   };
 
+  const handleViewLocais = (cliente: Cliente) => {
+    setClienteParaLocais(cliente);
+    setLocaisManagerOpen(true);
+  };
+
   const filteredClientes = clientes.filter((cliente) =>
     cliente.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cliente.cnpj?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -193,7 +201,11 @@ export default function Clientes() {
                         <TableCell>{cliente.email || "-"}</TableCell>
                         <TableCell>{cliente.phone || "-"}</TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleViewLocais(cliente)}
+                          >
                             <MapPin className="mr-1 h-3 w-3" />
                             {cliente.locaisCount || 0} {cliente.locaisCount === 1 ? 'local' : 'locais'}
                           </Button>
@@ -263,6 +275,17 @@ export default function Clientes() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <ClienteLocaisManager
+          clienteId={clienteParaLocais?.id || ""}
+          clienteName={clienteParaLocais?.name || ""}
+          isOpen={locaisManagerOpen}
+          onClose={() => {
+            setLocaisManagerOpen(false);
+            setClienteParaLocais(null);
+            fetchClientes(); // Refresh para atualizar contagem de locais
+          }}
+        />
       </Layout>
     </ProtectedRoute>
   );

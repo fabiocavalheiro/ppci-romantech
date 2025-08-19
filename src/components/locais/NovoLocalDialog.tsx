@@ -34,6 +34,7 @@ interface NovoLocalDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  clienteId?: string; // Parâmetro opcional para pré-selecionar cliente
 }
 
 const localSchema = z.object({
@@ -62,6 +63,7 @@ export function NovoLocalDialog({
   isOpen,
   onClose,
   onSuccess,
+  clienteId: preSelectedClienteId,
 }: NovoLocalDialogProps) {
   const [saving, setSaving] = useState(false);
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -72,10 +74,17 @@ export function NovoLocalDialog({
       name: "",
       address: "",
       description: "",
-      client_id: "",
+      client_id: preSelectedClienteId || "",
       client_type: "",
     },
   });
+
+  // Reset form with pre-selected client when dialog opens
+  useEffect(() => {
+    if (isOpen && preSelectedClienteId) {
+      form.setValue("client_id", preSelectedClienteId);
+    }
+  }, [isOpen, preSelectedClienteId, form]);
 
   useEffect(() => {
     const fetchClientes = async () => {
@@ -174,7 +183,11 @@ export function NovoLocalDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cliente *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value}
+                    disabled={!!preSelectedClienteId} // Desabilitar se cliente for pré-selecionado
+                  >
                     <FormControl>
                       <SelectTrigger className="bg-background border-input">
                         <SelectValue placeholder="Selecione o cliente" />
