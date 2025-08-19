@@ -42,6 +42,7 @@ interface Local {
   address: string;
   description?: string;
   client_id: string;
+  client_name?: string;
   client_type?: string;
   active: boolean;
   created_at: string;
@@ -70,7 +71,10 @@ export default function Locais() {
     try {
       let query = supabase
         .from('locations')
-        .select('*')
+        .select(`
+          *,
+          clients!inner(name)
+        `)
         .eq('active', true);
 
       // Se for cliente, filtrar apenas locais do seu cliente
@@ -107,6 +111,7 @@ export default function Locais() {
 
             return {
               ...local,
+              client_name: (local as any).clients?.name,
               extintores: contadores
             };
           })
@@ -300,19 +305,20 @@ export default function Locais() {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>Tipo</TableHead>
-                      <TableHead>Endereço</TableHead>
-                      <TableHead className="text-center">Total</TableHead>
-                      <TableHead className="text-center">Em dia</TableHead>
-                      <TableHead className="text-center">A vencer</TableHead>
-                      <TableHead className="text-center">Vencidos</TableHead>
-                      <TableHead className="text-center">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nome</TableHead>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead>Tipo</TableHead>
+                        <TableHead>Endereço</TableHead>
+                        <TableHead className="text-center">Total</TableHead>
+                        <TableHead className="text-center">Em dia</TableHead>
+                        <TableHead className="text-center">A vencer</TableHead>
+                        <TableHead className="text-center">Vencidos</TableHead>
+                        <TableHead className="text-center">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
                   <TableBody>
                     {locais.map((local) => (
                       <TableRow key={local.id}>
@@ -324,6 +330,11 @@ export default function Locais() {
                                 {local.description}
                               </div>
                             )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium">
+                            {local.client_name || 'N/A'}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -380,7 +391,7 @@ export default function Locais() {
                     ))}
                     {locais.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           Nenhum local encontrado.
                         </TableCell>
                       </TableRow>

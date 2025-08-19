@@ -21,6 +21,7 @@ interface Cliente {
   contact_person?: string;
   address?: any;
   created_at: string;
+  locaisCount?: number;
 }
 
 export default function Clientes() {
@@ -43,7 +44,25 @@ export default function Clientes() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setClientes(data || []);
+
+      // Buscar contagem de locais para cada cliente
+      if (data) {
+        const clientesComLocais = await Promise.all(
+          data.map(async (cliente) => {
+            const { data: locais } = await supabase
+              .from("locations")
+              .select("id")
+              .eq("client_id", cliente.id)
+              .eq("active", true);
+
+            return {
+              ...cliente,
+              locaisCount: locais?.length || 0
+            };
+          })
+        );
+        setClientes(clientesComLocais);
+      }
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);
       toast({
@@ -176,7 +195,7 @@ export default function Clientes() {
                         <TableCell>
                           <Button variant="ghost" size="sm">
                             <MapPin className="mr-1 h-3 w-3" />
-                            - locais
+                            {cliente.locaisCount || 0} {cliente.locaisCount === 1 ? 'local' : 'locais'}
                           </Button>
                         </TableCell>
                         <TableCell>

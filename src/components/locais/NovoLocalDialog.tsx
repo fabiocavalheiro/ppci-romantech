@@ -40,10 +40,16 @@ const localSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   address: z.string().min(1, "Endereço é obrigatório"),
   description: z.string().optional(),
+  client_id: z.string().min(1, "Cliente é obrigatório"),
   client_type: z.string().min(1, "Tipo de cliente é obrigatório"),
 });
 
 type LocalFormData = z.infer<typeof localSchema>;
+
+interface Cliente {
+  id: string;
+  name: string;
+}
 
 // Opções de tipo de cliente
 const clientTypes = [
@@ -58,6 +64,7 @@ export function NovoLocalDialog({
   onSuccess,
 }: NovoLocalDialogProps) {
   const [saving, setSaving] = useState(false);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
 
   const form = useForm<LocalFormData>({
     resolver: zodResolver(localSchema),
@@ -65,30 +72,41 @@ export function NovoLocalDialog({
       name: "",
       address: "",
       description: "",
+      client_id: "",
       client_type: "",
     },
   });
+
+  useEffect(() => {
+    const fetchClientes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("clients")
+          .select("id, name")
+          .eq("active", true)
+          .order("name", { ascending: true });
+
+        if (error) throw error;
+        setClientes(data || []);
+      } catch (error) {
+        console.error("Erro ao carregar clientes:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os clientes.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    if (isOpen) {
+      fetchClientes();
+    }
+  }, [isOpen]);
 
   const onSubmit = async (data: LocalFormData) => {
     setSaving(true);
     try {
       console.log('Criando local com dados:', data);
-      
-      // Primeiro, precisamos obter um client_id válido para manter a integridade referencial
-      const { data: clients, error: clientError } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('active', true)
-        .limit(1);
-
-      if (clientError) {
-        console.error('Erro ao buscar clientes:', clientError);
-        throw new Error('Erro ao buscar clientes');
-      }
-
-      if (!clients || clients.length === 0) {
-        throw new Error('Nenhum cliente ativo encontrado');
-      }
 
       const { error } = await supabase
         .from('locations')
@@ -96,8 +114,8 @@ export function NovoLocalDialog({
           name: data.name,
           address: data.address,
           description: data.description || null,
-          client_id: clients[0].id,
-          client_type: data.client_type as "residencial" | "comercial" | "industria", // Usar o tipo selecionado pelo usuário
+          client_id: data.client_id,
+          client_type: data.client_type as "residencial" | "comercial" | "industria",
           active: true,
         });
 
@@ -152,10 +170,39 @@ export function NovoLocalDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="client_type"
+              name="client_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Cliente *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="bg-background border-input">
+                        <SelectValue placeholder="Selecione o cliente" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-popover border shadow-md max-h-[200px] overflow-auto z-[100]">
+                      {clientes.map((cliente) => (
+                        <SelectItem 
+                          key={cliente.id} 
+                          value={cliente.id}
+                          className="cursor-pointer hover:bg-accent"
+                        >
+                          {cliente.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="client_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tipo de Cliente *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="bg-background border-input">
