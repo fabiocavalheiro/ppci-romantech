@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useSettings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,9 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import romanTechLogo from '@/assets/romantech-logo.png';
 
 export default function Auth() {
   const { user, profile, signIn, signUp, loading } = useAuth();
+  const { settings } = useSettings();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +95,25 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">RomanTech</h1>
+          <div className="flex justify-center mb-6">
+            {settings.logo_url ? (
+              <img 
+                src={settings.logo_url} 
+                alt={settings.company_name || "RomanTech"} 
+                className="h-20 w-auto object-contain"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = romanTechLogo;
+                }}
+              />
+            ) : (
+              <img 
+                src={romanTechLogo} 
+                alt="RomanTech" 
+                className="h-20 w-auto"
+              />
+            )}
+          </div>
+          <h1 className="text-3xl font-bold">{settings.company_name || "RomanTech"}</h1>
           <p className="text-muted-foreground mt-2">
             Sistema de Gestão de Segurança contra Incêndio
           </p>
