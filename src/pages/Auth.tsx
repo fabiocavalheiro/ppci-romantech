@@ -13,7 +13,7 @@ import romanTechLogo from '@/assets/romantech-logo.png';
 
 export default function Auth() {
   const { user, profile, signIn, signUp, loading } = useAuth();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +26,8 @@ export default function Auth() {
     }
   }, [user, profile, loading, navigate]);
 
-  // Mostrar loading enquanto verifica autenticação
-  if (loading) {
+  // Mostrar loading enquanto verifica autenticação ou carrega configurações
+  if (loading || settingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
