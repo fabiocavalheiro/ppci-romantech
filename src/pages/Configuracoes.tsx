@@ -9,9 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { BrandingSection } from "@/components/BrandingSection";
 
 export default function Configuracoes() {
   const { toast } = useToast();
+  const { isAdmin } = useAuth();
   
   // Estados para os campos de configuração
   const [config, setConfig] = useState({
@@ -101,6 +104,9 @@ export default function Configuracoes() {
           </div>
           
           <div className="grid gap-6">
+            {/* Seção de Branding - Apenas para Admin */}
+            {isAdmin() && <BrandingSection />}
+            
             <Card>
               <CardHeader>
                 <CardTitle>Configurações de Manutenção</CardTitle>

@@ -503,6 +503,30 @@ export type Database = {
           },
         ]
       }
+      settings: {
+        Row: {
+          company_name: string | null
+          id: number
+          logo_url: string | null
+          primary_color: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          id?: number
+          logo_url?: string | null
+          primary_color?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          id?: number
+          logo_url?: string | null
+          primary_color?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       sprinklers: {
         Row: {
           created_at: string

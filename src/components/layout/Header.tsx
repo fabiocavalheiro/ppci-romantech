@@ -14,9 +14,11 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import romanTechLogo from '@/assets/romantech-logo.png';
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useSettings } from "@/hooks/useSettings";
 
 export function Header() {
   const { user, profile, signOut, isAdmin } = useAuth();
+  const { settings } = useSettings();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [expiringExtintores, setExpiringExtintores] = useState<any[]>([]);
@@ -81,20 +83,42 @@ export function Header() {
         
         {/* Logo - visible on larger screens */}
         <div className="hidden lg:flex items-center space-x-4">
-          <img 
-            src={romanTechLogo} 
-            alt="RomanTech" 
-            className="h-8 w-auto"
-          />
+          {settings?.logo_url ? (
+            <img 
+              src={settings.logo_url} 
+              alt={settings.company_name || "RomanTech"} 
+              className="h-8 w-auto max-w-40 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = romanTechLogo;
+              }}
+            />
+          ) : (
+            <img 
+              src={romanTechLogo} 
+              alt="RomanTech" 
+              className="h-8 w-auto"
+            />
+          )}
         </div>
 
         {/* Mobile logo - visible when sidebar is closed */}
         <div className="flex lg:hidden items-center">
-          <img 
-            src={romanTechLogo} 
-            alt="RomanTech" 
-            className="h-7 w-auto"
-          />
+          {settings?.logo_url ? (
+            <img 
+              src={settings.logo_url} 
+              alt={settings.company_name || "RomanTech"} 
+              className="h-7 w-auto max-w-32 object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = romanTechLogo;
+              }}
+            />
+          ) : (
+            <img 
+              src={romanTechLogo} 
+              alt="RomanTech" 
+              className="h-7 w-auto"
+            />
+          )}
         </div>
 
         {/* Spacer */}
