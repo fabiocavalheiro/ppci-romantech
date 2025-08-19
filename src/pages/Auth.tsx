@@ -20,9 +20,28 @@ export default function Auth() {
 
   // Navegar para dashboard se usuário estiver logado
   useEffect(() => {
-    if (user && profile && !loading) {
-      console.log('Redirecting to dashboard - User:', user.email, 'Profile:', profile);
-      navigate('/dashboard', { replace: true });
+    if (user && !loading) {
+      console.log('User authenticated, checking profile...');
+      // Espera um pouco pelo profile antes de redirecionar
+      const timer = setTimeout(() => {
+        if (profile) {
+          console.log('Redirecting to dashboard - User:', user.email, 'Profile:', profile);
+          navigate('/dashboard', { replace: true });
+        } else {
+          // Se não tem profile após timeout, tenta buscar novamente
+          console.log('Profile not found, forcing reload...');
+          window.location.href = '/dashboard';
+        }
+      }, 1000);
+
+      // Se profile já existe, redireciona imediatamente
+      if (profile) {
+        clearTimeout(timer);
+        console.log('Redirecting to dashboard immediately - User:', user.email, 'Profile:', profile);
+        navigate('/dashboard', { replace: true });
+      }
+
+      return () => clearTimeout(timer);
     }
   }, [user, profile, loading, navigate]);
 
