@@ -49,7 +49,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Extintor {
   id?: string;
-  numero: number;
+  numero: number | string;
   tipo: 'BC' | 'ABC' | 'CO2';
   status: 'ok' | 'warning' | 'danger' | 'expired';
   localizacao_texto?: string;
@@ -129,7 +129,7 @@ export function ExtintoresEditDialog({
 
   const handleAddExtintor = () => {
     const newExtintor: Extintor = {
-      numero: 1, // Valor inicial, mas será editável
+      numero: "", // Valor inicial vazio, mas será editável
       tipo: 'ABC',
       status: 'ok',
       isNew: true,
@@ -157,6 +157,20 @@ export function ExtintoresEditDialog({
   const handleSave = async () => {
     if (!localId) return;
 
+    // Validar se todos os extintores têm número
+    const extintoresSemNumero = extintores.filter(extintor => 
+      !extintor.numero || extintor.numero === "" || isNaN(Number(extintor.numero)) || Number(extintor.numero) < 1
+    );
+
+    if (extintoresSemNumero.length > 0) {
+      toast({
+        title: "Erro de validação",
+        description: "Todos os extintores devem ter um número válido maior que 0.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
       // Deletar extintores removidos (que existiam antes mas não estão mais na lista)
@@ -183,7 +197,7 @@ export function ExtintoresEditDialog({
       for (const extintor of extintores) {
         const data = {
           local_id: localId,
-          numero: extintor.numero,
+          numero: Number(extintor.numero),
           tipo: extintor.tipo,
           status: extintor.status,
           localizacao_texto: extintor.localizacao_texto || null,
@@ -299,7 +313,7 @@ export function ExtintoresEditDialog({
                          <Input
                            type="number"
                            value={extintor.numero}
-                           onChange={(e) => handleUpdateExtintor(index, 'numero', parseInt(e.target.value) || 0)}
+                           onChange={(e) => handleUpdateExtintor(index, 'numero', e.target.value)}
                            placeholder="Nº"
                            min="1"
                            className="w-16"
