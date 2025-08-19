@@ -37,7 +37,7 @@ export default function Relatorios() {
   }, [fetchClients]);
 
   useEffect(() => {
-    if (filters.clientId) {
+    if (filters.clientId && filters.clientId !== 'all') {
       fetchLocations(filters.clientId);
     } else {
       fetchLocations();
@@ -155,14 +155,14 @@ export default function Relatorios() {
                 <div className="space-y-2">
                   <Label>Cliente</Label>
                   <Select 
-                    value={filters.clientId || ""} 
-                    onValueChange={(value) => handleFilterChange('clientId', value || undefined)}
+                    value={filters.clientId || "all"} 
+                    onValueChange={(value) => handleFilterChange('clientId', value === "all" ? undefined : value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Todos os clientes" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos os clientes</SelectItem>
+                      <SelectItem value="all">Todos os clientes</SelectItem>
                       {clients.map(client => (
                         <SelectItem key={client.id} value={client.id}>
                           {client.name}
@@ -175,17 +175,17 @@ export default function Relatorios() {
                 <div className="space-y-2">
                   <Label>Local</Label>
                   <Select 
-                    value={filters.locationId || ""} 
-                    onValueChange={(value) => handleFilterChange('locationId', value || undefined)}
-                    disabled={!filters.clientId}
+                    value={filters.locationId || "all"} 
+                    onValueChange={(value) => handleFilterChange('locationId', value === "all" ? undefined : value)}
+                    disabled={!filters.clientId || filters.clientId === 'all'}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Todos os locais" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos os locais</SelectItem>
+                      <SelectItem value="all">Todos os locais</SelectItem>
                       {locations
-                        .filter(location => !filters.clientId || location.client_id === filters.clientId)
+                        .filter(location => !filters.clientId || filters.clientId === 'all' || location.client_id === filters.clientId)
                         .map(location => (
                           <SelectItem key={location.id} value={location.id}>
                             {location.name}

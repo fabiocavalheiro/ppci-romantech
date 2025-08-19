@@ -127,9 +127,9 @@ export const useReports = () => {
         query = query.eq('status', filters.status);
       }
 
-      if (filters.locationId) {
+      if (filters.locationId && filters.locationId !== 'all') {
         query = query.eq('local_id', filters.locationId);
-      } else if (filters.clientId) {
+      } else if (filters.clientId && filters.clientId !== 'all') {
         // Se cliente específico, filtrar por locais desse cliente
         const { data: clientLocations } = await supabase
           .from('locations')
