@@ -187,7 +187,6 @@ export function ExtintoresEditDialog({
           tipo: extintor.tipo,
           status: extintor.status,
           localizacao_texto: extintor.localizacao_texto || null,
-          responsavel_manutencao: extintor.responsavel_manutencao || null,
           ultima_inspecao: extintor.ultima_inspecao ? extintor.ultima_inspecao.toISOString().split('T')[0] : null,
           proxima_inspecao: extintor.proxima_inspecao ? extintor.proxima_inspecao.toISOString().split('T')[0] : null,
           observacoes: extintor.observacoes || null,
@@ -284,14 +283,13 @@ export function ExtintoresEditDialog({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-20">Número</TableHead>
-                    <TableHead className="w-24">Tipo</TableHead>
-                    <TableHead className="w-24">Status</TableHead>
-                    <TableHead>Localização</TableHead>
-                    <TableHead>Responsável</TableHead>
-                    <TableHead className="w-32">Última Inspeção</TableHead>
-                    <TableHead className="w-32">Próxima Inspeção</TableHead>
-                    <TableHead>Observações</TableHead>
-                    <TableHead className="w-20">Ações</TableHead>
+                     <TableHead className="w-24">Tipo</TableHead>
+                     <TableHead className="w-24">Status</TableHead>
+                     <TableHead>Localização</TableHead>
+                     <TableHead className="w-32">Última Inspeção</TableHead>
+                     <TableHead className="w-32">Próxima Inspeção</TableHead>
+                     <TableHead>Observações</TableHead>
+                     <TableHead className="w-20">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -349,16 +347,8 @@ export function ExtintoresEditDialog({
                         />
                       </TableCell>
 
-                      <TableCell>
-                        <Input
-                          value={extintor.responsavel_manutencao || ''}
-                          onChange={(e) => handleUpdateExtintor(index, 'responsavel_manutencao', e.target.value)}
-                          placeholder="Nome do responsável"
-                        />
-                      </TableCell>
-
-                      <TableCell>
-                        <Popover>
+                       <TableCell>
+                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
@@ -441,9 +431,9 @@ export function ExtintoresEditDialog({
                   ))}
                   {extintores.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                        Nenhum extintor cadastrado. Clique em "Adicionar Extintor" para começar.
-                      </TableCell>
+                       <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                         Nenhum extintor cadastrado. Clique em "Adicionar Extintor" para começar.
+                       </TableCell>
                     </TableRow>
                   )}
                 </TableBody>
