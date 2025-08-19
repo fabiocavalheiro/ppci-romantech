@@ -215,18 +215,26 @@ export function ExtintoresEditDialog({
         if (extintor.id && !extintor.isNew) {
           // Atualizar existente
           console.log('Atualizando extintor existente:', extintor.id);
-          const result = await supabase
+          const { data: updateData, error: updateError } = await supabase
             .from('extintores')
             .update(data)
             .eq('id', extintor.id);
-          console.log('Resultado update:', result);
+          console.log('Resultado update:', { data: updateData, error: updateError });
+          
+          if (updateError) {
+            throw updateError;
+          }
         } else {
           // Inserir novo
           console.log('Inserindo novo extintor');
-          const result = await supabase
+          const { data: insertData, error: insertError } = await supabase
             .from('extintores')
             .insert(data);
-          console.log('Resultado insert:', result);
+          console.log('Resultado insert:', { data: insertData, error: insertError });
+          
+          if (insertError) {
+            throw insertError;
+          }
         }
       }
 
