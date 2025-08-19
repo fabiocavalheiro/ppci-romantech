@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ExtintorCount {
   total: number;
@@ -48,6 +49,7 @@ interface Local {
 }
 
 export default function Locais() {
+  const { profile, isAdmin, isCliente } = useAuth();
   const [locais, setLocais] = useState<Local[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingLocal, setEditingLocal] = useState<{
@@ -63,55 +65,56 @@ export default function Locais() {
   }, []);
 
   const loadLocais = async () => {
+    console.log('Carregando locais...');
     setLoading(true);
     try {
-      console.log('Carregando locais...');
-      
-      // Carregar locais
-      const { data: locaisData, error: locaisError } = await supabase
+      let query = supabase
         .from('locations')
         .select('*')
-        .eq('active', true)
-        .order('name');
+        .eq('active', true);
+
+      // Se for cliente, filtrar apenas locais do seu cliente
+      if (isCliente() && profile?.client_id) {
+        query = query.eq('client_id', profile.client_id);
+      }
+
+      const { data: locaisData, error: locaisError } = await query.order('name', { ascending: true });
 
       console.log('Locais carregados:', locaisData);
       console.log('Erro nos locais:', locaisError);
 
       if (locaisError) throw locaisError;
 
-      // Carregar contadores de extintores para cada local
-      const locaisWithCounts = await Promise.all(
-        (locaisData || []).map(async (local) => {
-          console.log('Carregando extintores para local:', local.name);
-          
-          const { data: extintoresData, error: extintoresError } = await supabase
-            .from('extintores')
-            .select('status')
-            .eq('local_id', local.id);
+      if (locaisData) {
+        // Carregar contadores de extintores para cada local
+        const locaisComContadores = await Promise.all(
+          locaisData.map(async (local) => {
+            console.log('Carregando extintores para local:', local.name);
+            
+            const { data: extintores } = await supabase
+              .from('extintores')
+              .select('status')
+              .eq('local_id', local.id);
 
-          console.log(`Extintores para ${local.name}:`, extintoresData);
+            console.log(`Extintores para ${local.name}:`, extintores);
 
-          if (extintoresError) {
-            console.error('Erro ao carregar extintores:', extintoresError);
+            const contadores = {
+              total: extintores?.length || 0,
+              ok: extintores?.filter(e => e.status === 'ok').length || 0,
+              warning: extintores?.filter(e => e.status === 'warning').length || 0,
+              danger: extintores?.filter(e => e.status === 'danger' || e.status === 'expired').length || 0,
+            };
+
             return {
               ...local,
-              extintores: { total: 0, ok: 0, warning: 0, danger: 0 }
+              extintores: contadores
             };
-          }
+          })
+        );
 
-          const counts = {
-            total: extintoresData?.length || 0,
-            ok: extintoresData?.filter(e => e.status === 'ok').length || 0,
-            warning: extintoresData?.filter(e => e.status === 'warning').length || 0,
-            danger: extintoresData?.filter(e => e.status === 'danger' || e.status === 'expired').length || 0,
-          };
-
-          return { ...local, extintores: counts };
-        })
-      );
-
-      console.log('Locais com contadores:', locaisWithCounts);
-      setLocais(locaisWithCounts);
+        console.log('Locais com contadores:', locaisComContadores);
+        setLocais(locaisComContadores);
+      }
     } catch (error: any) {
       console.error('Erro ao carregar locais:', error);
       toast({
@@ -222,16 +225,18 @@ export default function Locais() {
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Locais</h2>
                 <p className="text-muted-foreground">
-                  Gerencie os locais e seus extintores
+                  {isAdmin() ? "Gerencie os locais e seus extintores" : "Visualize seus locais e extintores"}
                 </p>
               </div>
-              <Button 
-                className="flex items-center gap-2"
-                onClick={() => setShowNovoLocal(true)}
-              >
-                <Plus className="h-4 w-4" />
-                Novo Local
-              </Button>
+              {isAdmin() && (
+                <Button 
+                  className="flex items-center gap-2"
+                  onClick={() => setShowNovoLocal(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Novo Local
+                </Button>
+              )}
             </div>
           </div>
 
@@ -358,15 +363,17 @@ export default function Locais() {
                               <Edit className="h-4 w-4" />
                               Extintores
                             </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setLocalToDelete(local)}
-                              className="flex items-center gap-2 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              Excluir
-                            </Button>
+                            {isAdmin() && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setLocalToDelete(local)}
+                                className="flex items-center gap-2 text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Excluir
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>

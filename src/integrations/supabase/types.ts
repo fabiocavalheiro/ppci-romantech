@@ -409,6 +409,7 @@ export type Database = {
       profiles: {
         Row: {
           active: boolean
+          client_id: string | null
           created_at: string
           email: string
           full_name: string
@@ -420,6 +421,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          client_id?: string | null
           created_at?: string
           email: string
           full_name: string
@@ -431,6 +433,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          client_id?: string | null
           created_at?: string
           email?: string
           full_name?: string
@@ -440,7 +443,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sprinklers: {
         Row: {
@@ -497,6 +508,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_client_id: {
+        Args: { user_id: string }
+        Returns: string
+      }
       get_user_client_ids: {
         Args: { user_id: string }
         Returns: string[]

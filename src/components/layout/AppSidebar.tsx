@@ -26,43 +26,43 @@ const allNavigation = [
     name: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
-    roles: ["admin", "cliente", "tecnico"]
+    roles: ["admin", "cliente"]
   },
   {
     name: "Calendário",
     href: "/calendario",
     icon: Calendar,
-    roles: ["admin", "cliente", "tecnico"]
+    roles: ["admin", "cliente"]
   },
   {
     name: "Relatórios",
     href: "/relatorios",
     icon: FileText,
-    roles: ["admin", "cliente", "tecnico"]
+    roles: ["admin", "cliente"]
   },
   {
     name: "Clientes",
     href: "/clientes",
     icon: Building2,
-    roles: ["admin", "tecnico"]
+    roles: ["admin"] // Apenas admin pode ver todos os clientes
   },
   {
     name: "Locais",
     href: "/locais",
     icon: MapPin,
-    roles: ["admin", "cliente", "tecnico"]
+    roles: ["admin", "cliente"] // Cliente vê apenas seus locais
   },
   {
     name: "Usuários",
     href: "/usuarios",
     icon: Users,
-    roles: ["admin"]
+    roles: ["admin"] // Apenas admin pode gerenciar usuários
   },
   {
     name: "Configurações",
     href: "/configuracoes",
     icon: Settings,
-    roles: ["admin", "cliente", "tecnico"]
+    roles: ["admin"] // Apenas admin pode alterar configurações do sistema
   }
 ];
 

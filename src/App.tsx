@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Calendario from "./pages/Calendario";
@@ -26,13 +27,71 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/calendario" element={<Calendario />} />
-            <Route path="/relatorios" element={<Relatorios />} />
-            <Route path="/clientes" element={<Clientes />} />
-            <Route path="/locais" element={<Locais />} />
-            <Route path="/usuarios" element={<Usuarios />} />
-            <Route path="/configuracoes" element={<Configuracoes />} />
+            
+            {/* Rotas protegidas por papel */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin', 'cliente']}>
+                  <Dashboard />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/calendario" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin', 'cliente']}>
+                  <Calendario />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/relatorios" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin', 'cliente']}>
+                  <Relatorios />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/clientes" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Clientes />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/locais" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin', 'cliente']}>
+                  <Locais />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/usuarios" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Usuarios />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/configuracoes" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Configuracoes />
+                </RoleProtectedRoute>
+              } 
+            />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

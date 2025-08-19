@@ -10,6 +10,7 @@ interface Profile {
   email: string;
   phone?: string;
   role: string;
+  client_id?: string;
   active: boolean;
 }
 
@@ -22,6 +23,11 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any; data?: any }>;
   signOut: () => Promise<void>;
   hasRole: (roles: string[]) => boolean;
+  isAdmin: () => boolean;
+  isCliente: () => boolean;
+  canAccessRoute: (route: string) => boolean;
+  canManageUsers: () => boolean;
+  canSeeAllClients: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -148,6 +154,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return profile ? roles.includes(profile.role) : false;
   };
 
+  const isAdmin = () => {
+    return profile?.role === 'admin';
+  };
+
+  const isCliente = () => {
+    return profile?.role === 'cliente';
+  };
+
+  const canAccessRoute = (route: string) => {
+    if (!profile) return false;
+    
+    // Rotas permitidas para admin
+    const adminRoutes = ['/dashboard', '/calendario', '/relatorios', '/clientes', '/locais', '/usuarios', '/configuracoes'];
+    
+    // Rotas permitidas para cliente
+    const clienteRoutes = ['/dashboard', '/calendario', '/relatorios', '/locais'];
+    
+    if (isAdmin()) {
+      return adminRoutes.includes(route);
+    }
+    
+    if (isCliente()) {
+      return clienteRoutes.includes(route);
+    }
+    
+    return false;
+  };
+
+  const canManageUsers = () => {
+    return isAdmin();
+  };
+
+  const canSeeAllClients = () => {
+    return isAdmin();
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -157,7 +199,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signUp,
       signOut,
-      hasRole
+      hasRole,
+      isAdmin,
+      isCliente,
+      canAccessRoute,
+      canManageUsers,
+      canSeeAllClients
     }}>
       {children}
     </AuthContext.Provider>
