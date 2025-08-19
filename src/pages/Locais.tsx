@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ExtintoresEditDialog } from "@/components/dashboard/ExtintoresEditDialog";
+import { NovoLocalDialog } from "@/components/locais/NovoLocalDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -42,6 +43,8 @@ export default function Locais() {
     id: string;
     name: string;
   } | null>(null);
+
+  const [showNovoLocal, setShowNovoLocal] = useState(false);
 
   useEffect(() => {
     loadLocais();
@@ -112,6 +115,11 @@ export default function Locais() {
     loadLocais();
   };
 
+  const handleNovoLocalSuccess = () => {
+    // Recarregar locais após criar novo
+    loadLocais();
+  };
+
   if (loading) {
     return (
       <ProtectedRoute>
@@ -137,7 +145,10 @@ export default function Locais() {
                   Gerencie os locais e seus extintores
                 </p>
               </div>
-              <Button className="flex items-center gap-2">
+              <Button 
+                className="flex items-center gap-2"
+                onClick={() => setShowNovoLocal(true)}
+              >
                 <Plus className="h-4 w-4" />
                 Novo Local
               </Button>
@@ -285,6 +296,13 @@ export default function Locais() {
               localName={editingLocal.name}
             />
           )}
+
+          {/* Dialog de Novo Local */}
+          <NovoLocalDialog
+            isOpen={showNovoLocal}
+            onClose={() => setShowNovoLocal(false)}
+            onSuccess={handleNovoLocalSuccess}
+          />
         </div>
       </Layout>
     </ProtectedRoute>
