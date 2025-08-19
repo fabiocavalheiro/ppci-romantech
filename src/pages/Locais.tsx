@@ -41,6 +41,7 @@ interface Local {
   address: string;
   description?: string;
   client_id: string;
+  client_type?: string;
   active: boolean;
   created_at: string;
   extintores?: ExtintorCount;
@@ -297,6 +298,7 @@ export default function Locais() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Nome</TableHead>
+                      <TableHead>Tipo</TableHead>
                       <TableHead>Endereço</TableHead>
                       <TableHead className="text-center">Total</TableHead>
                       <TableHead className="text-center">Em dia</TableHead>
@@ -317,6 +319,11 @@ export default function Locais() {
                               </div>
                             )}
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">
+                            {local.client_type || 'N/A'}
+                          </Badge>
                         </TableCell>
                         <TableCell>{local.address}</TableCell>
                         <TableCell className="text-center">
@@ -365,7 +372,7 @@ export default function Locais() {
                     ))}
                     {locais.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                           Nenhum local encontrado.
                         </TableCell>
                       </TableRow>

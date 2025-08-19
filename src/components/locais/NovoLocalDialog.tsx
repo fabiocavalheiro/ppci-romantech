@@ -74,8 +74,7 @@ export function NovoLocalDialog({
     try {
       console.log('Criando local com dados:', data);
       
-      // Primeiro, precisamos obter um client_id válido
-      // Vamos buscar o primeiro cliente ativo ou usar um valor padrão
+      // Primeiro, precisamos obter um client_id válido para manter a integridade referencial
       const { data: clients, error: clientError } = await supabase
         .from('clients')
         .select('id')
@@ -98,6 +97,7 @@ export function NovoLocalDialog({
           address: data.address,
           description: data.description || null,
           client_id: clients[0].id,
+          client_type: data.client_type as "residencial" | "comercial" | "industria", // Usar o tipo selecionado pelo usuário
           active: true,
         });
 

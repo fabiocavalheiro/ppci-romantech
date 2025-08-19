@@ -367,6 +367,7 @@ export type Database = {
           active: boolean
           address: string
           client_id: string
+          client_type: Database["public"]["Enums"]["client_type_enum"] | null
           created_at: string
           description: string | null
           id: string
@@ -377,6 +378,7 @@ export type Database = {
           active?: boolean
           address: string
           client_id: string
+          client_type?: Database["public"]["Enums"]["client_type_enum"] | null
           created_at?: string
           description?: string | null
           id?: string
@@ -387,6 +389,7 @@ export type Database = {
           active?: boolean
           address?: string
           client_id?: string
+          client_type?: Database["public"]["Enums"]["client_type_enum"] | null
           created_at?: string
           description?: string | null
           id?: string
@@ -504,6 +507,7 @@ export type Database = {
       }
     }
     Enums: {
+      client_type_enum: "residencial" | "comercial" | "industria"
       equipment_status: "ok" | "warning" | "danger" | "expired"
       extintor_type: "BC" | "ABC" | "CO2"
       user_role: "admin" | "cliente" | "tecnico"
@@ -634,6 +638,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      client_type_enum: ["residencial", "comercial", "industria"],
       equipment_status: ["ok", "warning", "danger", "expired"],
       extintor_type: ["BC", "ABC", "CO2"],
       user_role: ["admin", "cliente", "tecnico"],
