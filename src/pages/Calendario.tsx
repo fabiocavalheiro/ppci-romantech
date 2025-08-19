@@ -41,7 +41,9 @@ export default function Calendario() {
     setLoading(true);
     try {
       const dateStr = date.toISOString().split('T')[0];
-      const { data, error } = await supabase
+      
+      // Buscar atividades
+      const { data: activitiesData, error: activitiesError } = await supabase
         .from("activities")
         .select(`
           id,
@@ -50,19 +52,35 @@ export default function Calendario() {
           start_time,
           end_time,
           status,
-          location_id,
-          locations (
-            name,
-            address
-          )
+          location_id
         `)
         .eq("scheduled_date", dateStr)
         .order("start_time");
 
-      if (error) throw error;
-      setActivities(data || []);
+      if (activitiesError) throw activitiesError;
+
+      // Buscar informações dos locais
+      const locationIds = activitiesData?.map(activity => activity.location_id) || [];
+      const { data: locationsData, error: locationsError } = await supabase
+        .from("locations")
+        .select("id, name, address")
+        .in("id", locationIds);
+
+      if (locationsError) throw locationsError;
+
+      // Combinar dados
+      const activitiesWithLocations = activitiesData?.map(activity => {
+        const location = locationsData?.find(loc => loc.id === activity.location_id);
+        return {
+          ...activity,
+          locations: location || null
+        };
+      }) || [];
+
+      setActivities(activitiesWithLocations);
     } catch (error) {
       console.error("Erro ao buscar atividades:", error);
+      setActivities([]);
     } finally {
       setLoading(false);
     }
