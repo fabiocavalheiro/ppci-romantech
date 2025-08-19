@@ -1,0 +1,7 @@
+-- Inserir clientes reais de exemplo para o sistema
+INSERT INTO public.clients (name, cnpj, email, phone, contact_person, address, active) VALUES 
+('Empresas Reunidas Paulista Ltda', '12.345.678/0001-90', 'contato@empresasreunidas.com.br', '(11) 3456-7890', 'João Silva', '{"street": "Av. Paulista, 1500", "city": "São Paulo", "state": "SP", "zip": "01310-100"}', true),
+('Indústria Metalúrgica ABC S.A.', '23.456.789/0001-01', 'comercial@metalurgicaabc.com.br', '(11) 2345-6789', 'Maria Santos', '{"street": "Rua Industrial, 2000", "city": "São Bernardo do Campo", "state": "SP", "zip": "09606-000"}', true),
+('Comércio de Materiais São José Ltda', '34.567.890/0001-12', 'vendas@materiaissjose.com.br', '(21) 3456-7890', 'Carlos Lima', '{"street": "Av. Brasil, 3500", "city": "Rio de Janeiro", "state": "RJ", "zip": "21040-020"}', true),
+('Hospital Santa Maria', '45.678.901/0001-23', 'admin@hospitalsantamaria.com.br', '(11) 4567-8901', 'Ana Costa', '{"street": "Rua da Saúde, 800", "city": "São Paulo", "state": "SP", "zip": "04038-001"}', true),
+('Shopping Center Vila Real', '56.789.012/0001-34', 'administracao@shoppingvilareal.com.br', '(11) 5678-9012', 'Pedro Oliveira', '{"street": "Av. das Américas, 1200", "city": "São Paulo", "state": "SP", "zip": "05466-000"}', true);

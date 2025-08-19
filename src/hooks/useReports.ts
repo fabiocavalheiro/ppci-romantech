@@ -44,15 +44,9 @@ export const useReports = () => {
 
       if (error) throw error;
       
-      // Filtrar dados de exemplo no frontend para ter mais controle
-      const filteredClients = (data || []).filter(client => 
-        client.name !== 'Empresa Exemplo Ltda' && 
-        client.name !== 'Empresa Teste' &&
-        !client.name.toLowerCase().includes('exemplo') &&
-        !client.name.toLowerCase().includes('teste')
-      );
-      
-      setClients(filteredClients);
+      // Para ambiente de desenvolvimento, mostrar todos os clientes
+      // Em produção, você pode ajustar os filtros conforme necessário
+      setClients(data || []);
     } catch (error) {
       console.error('Error fetching clients:', error);
       toast({
