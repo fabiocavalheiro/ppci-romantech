@@ -299,7 +299,7 @@ export function ExtintoresEditDialog({
                          <Input
                            type="number"
                            value={extintor.numero}
-                           onChange={(e) => handleUpdateExtintor(index, 'numero', parseInt(e.target.value) || 1)}
+                           onChange={(e) => handleUpdateExtintor(index, 'numero', parseInt(e.target.value) || 0)}
                            placeholder="Nº"
                            min="1"
                            className="w-16"
