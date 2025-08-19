@@ -86,9 +86,19 @@ export function NovoLocalDialog({
         .eq('active', true)
         .order('name');
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erro na query de clientes:', error);
+        throw error;
+      }
+      
       console.log('Clientes carregados:', data);
       setClients(data || []);
+      
+      // Se houver apenas um cliente, selecioná-lo automaticamente
+      if (data && data.length === 1) {
+        form.setValue('client_id', data[0].id);
+        console.log('Cliente único selecionado automaticamente:', data[0].name);
+      }
     } catch (error) {
       console.error('Erro ao carregar clientes:', error);
       toast({
@@ -166,18 +176,22 @@ export function NovoLocalDialog({
                     <FormLabel>Cliente *</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="bg-background">
+                        <SelectTrigger className="bg-background border-input">
                           <SelectValue placeholder="Selecione um cliente" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-background border shadow-lg z-50">
+                      <SelectContent className="bg-popover border shadow-md max-h-[200px] overflow-auto z-[100]">
                         {clients.length === 0 ? (
-                          <SelectItem value="no-clients" disabled>
-                            Nenhum cliente encontrado
-                          </SelectItem>
+                          <div className="p-2 text-sm text-muted-foreground">
+                            {loading ? "Carregando..." : "Nenhum cliente encontrado"}
+                          </div>
                         ) : (
                           clients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>
+                            <SelectItem 
+                              key={client.id} 
+                              value={client.id}
+                              className="cursor-pointer hover:bg-accent"
+                            >
                               {client.name}
                             </SelectItem>
                           ))
@@ -185,8 +199,8 @@ export function NovoLocalDialog({
                       </SelectContent>
                     </Select>
                     <FormMessage />
-                    {clients.length === 0 && (
-                      <p className="text-sm text-muted-foreground">
+                    {clients.length === 0 && !loading && (
+                      <p className="text-sm text-destructive">
                         É necessário ter pelo menos um cliente cadastrado para criar um local.
                       </p>
                     )}
