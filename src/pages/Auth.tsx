@@ -115,7 +115,6 @@ export default function Auth() {
           </div>
           <h1 className="text-3xl font-bold">{settings?.company_name || "RomanTech"}</h1>
           <p className="text-muted-foreground mt-2">
-            Sistema de Gestão de Segurança contra Incêndio
           </p>
         </div>
 
