@@ -196,7 +196,7 @@ export default function Relatorios() {
                 </div>
               </div>
               
-              <div className="grid gap-4 md:grid-cols-4 mt-4">
+              <div className="grid gap-4 md:grid-cols-3 mt-4">
                 <div className="space-y-2">
                   <Label>Status</Label>
                   <Select 
@@ -247,29 +247,33 @@ export default function Relatorios() {
                     />
                   </div>
                 </div>
-                
-                <div className="flex items-end space-x-2">
-                  <Button 
-                    onClick={handleGenerateReport}
-                    disabled={isGenerateDisabled || loading}
-                    className="flex-1"
-                  >
-                    {loading ? (
-                      <>
-                        <Calendar className="mr-2 h-4 w-4 animate-spin" />
-                        Gerando...
-                      </>
-                    ) : (
-                      <>
-                        <Filter className="mr-2 h-4 w-4" />
-                        Gerar Relatório
-                      </>
-                    )}
-                  </Button>
-                  <Button variant="outline" onClick={handleClearFilters}>
-                    Limpar
-                  </Button>
-                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-2 mt-4">
+                <Button 
+                  onClick={handleGenerateReport}
+                  disabled={isGenerateDisabled || loading}
+                  className="flex-1 sm:flex-none"
+                >
+                  {loading ? (
+                    <>
+                      <Calendar className="mr-2 h-4 w-4 animate-spin" />
+                      Gerando...
+                    </>
+                  ) : (
+                    <>
+                      <Filter className="mr-2 h-4 w-4" />
+                      Gerar Relatório
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleClearFilters}
+                  className="flex-1 sm:flex-none"
+                >
+                  Limpar
+                </Button>
               </div>
             </CardContent>
           </Card>
