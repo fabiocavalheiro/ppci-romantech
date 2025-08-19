@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Bell, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,6 +16,18 @@ import { useAuth } from "@/hooks/useAuth";
 
 export function Header() {
   const { user, profile, signOut } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  
+  const handleSignOut = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Erro no logout:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -79,9 +92,13 @@ export function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="text-red-600 focus:text-red-600">
+              <DropdownMenuItem 
+                onClick={handleSignOut} 
+                disabled={isLoggingOut}
+                className="text-red-600 focus:text-red-600"
+              >
                 <LogOut className="mr-2 h-4 w-4" />
-                Sair
+                {isLoggingOut ? "Saindo..." : "Sair"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

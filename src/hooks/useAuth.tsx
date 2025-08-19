@@ -146,8 +146,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
+    try {
+      console.log('Iniciando logout...');
+      
+      // Limpar estados locais primeiro
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+      
+      // Fazer logout no Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('Erro no logout:', error);
+        throw error;
+      }
+      
+      console.log('Logout realizado com sucesso');
+      
+      // Redirecionar para página de auth
+      navigate('/auth', { replace: true });
+    } catch (error) {
+      console.error('Erro durante o logout:', error);
+      
+      // Mesmo com erro, limpar estados e redirecionar
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+      navigate('/auth', { replace: true });
+    }
   };
 
   const hasRole = (roles: string[]) => {
