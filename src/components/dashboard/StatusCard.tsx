@@ -14,9 +14,11 @@ interface StatusCardProps {
   counts: StatusCount;
   total: number;
   onClick?: () => void;
+  onWarningClick?: () => void;
+  onDangerClick?: () => void;
 }
 
-export function StatusCard({ title, icon: Icon, counts, total, onClick }: StatusCardProps) {
+export function StatusCard({ title, icon: Icon, counts, total, onClick, onWarningClick, onDangerClick }: StatusCardProps) {
   return (
     <Card 
       className={cn(
@@ -41,7 +43,18 @@ export function StatusCard({ title, icon: Icon, counts, total, onClick }: Status
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div 
+            className={cn(
+              "flex items-center justify-between",
+              onWarningClick && counts.warning > 0 && "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 transition-colors"
+            )}
+            onClick={(e) => {
+              if (onWarningClick && counts.warning > 0) {
+                e.stopPropagation();
+                onWarningClick();
+              }
+            }}
+          >
             <span className="text-sm text-muted-foreground">A vencer</span>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-status-warning flex-shrink-0"></div>
@@ -49,7 +62,18 @@ export function StatusCard({ title, icon: Icon, counts, total, onClick }: Status
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div 
+            className={cn(
+              "flex items-center justify-between",
+              onDangerClick && counts.danger > 0 && "cursor-pointer hover:bg-muted/50 rounded p-1 -m-1 transition-colors"
+            )}
+            onClick={(e) => {
+              if (onDangerClick && counts.danger > 0) {
+                e.stopPropagation();
+                onDangerClick();
+              }
+            }}
+          >
             <span className="text-sm text-muted-foreground">Vencidos</span>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 rounded-full bg-status-danger flex-shrink-0"></div>

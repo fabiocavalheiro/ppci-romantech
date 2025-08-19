@@ -11,6 +11,7 @@ import { StatusCard } from "@/components/dashboard/StatusCard";
 import { RecentActivities } from "@/components/dashboard/RecentActivities";
 import { EquipmentEditDialog } from "@/components/dashboard/EquipmentEditDialog";
 import { ExtintoresEditDialog } from "@/components/dashboard/ExtintoresEditDialog";
+import { ExtintoresStatusDialog } from "@/components/dashboard/ExtintoresStatusDialog";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,6 +71,11 @@ export default function Dashboard() {
   const [editingExtintores, setEditingExtintores] = useState<{
     localId: string;
     localName: string;
+  } | null>(null);
+
+  const [extintoresStatusDialog, setExtintoresStatusDialog] = useState<{
+    status: 'warning' | 'danger';
+    title: string;
   } | null>(null);
 
   useEffect(() => {
@@ -168,6 +174,11 @@ export default function Dashboard() {
     }
   };
 
+  const handleExtintoresStatusClick = (status: 'warning' | 'danger') => {
+    const title = status === 'warning' ? 'Extintores A Vencer' : 'Extintores Vencidos';
+    setExtintoresStatusDialog({ status, title });
+  };
+
   const handleCloseExtintoresDialog = () => {
     setEditingExtintores(null);
     // Recarregar dados dos extintores
@@ -201,6 +212,8 @@ export default function Dashboard() {
                   counts={equipment.counts}
                   total={equipment.total}
                   onClick={() => handleCardClick(index)}
+                  onWarningClick={equipment.title === "Extintores" ? () => handleExtintoresStatusClick('warning') : undefined}
+                  onDangerClick={equipment.title === "Extintores" ? () => handleExtintoresStatusClick('danger') : undefined}
                 />
               ))}
             </div>
@@ -255,6 +268,15 @@ export default function Dashboard() {
                 onClose={handleCloseExtintoresDialog}
                 localId={editingExtintores.localId}
                 localName={editingExtintores.localName}
+              />
+            )}
+            {/* Extintores Status Dialog */}
+            {extintoresStatusDialog && (
+              <ExtintoresStatusDialog
+                isOpen={!!extintoresStatusDialog}
+                onClose={() => setExtintoresStatusDialog(null)}
+                status={extintoresStatusDialog.status}
+                title={extintoresStatusDialog.title}
               />
             )}
           </div>
