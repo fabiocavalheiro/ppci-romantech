@@ -145,11 +145,15 @@ export default function Locais() {
     if (!localToDelete) return;
 
     try {
+      console.log('Iniciando exclusão do local:', localToDelete.id);
+      
       // Primeiro verificar se há extintores associados ao local
       const { data: extintores, error: extintoresError } = await supabase
         .from('extintores')
         .select('id')
         .eq('local_id', localToDelete.id);
+
+      console.log('Verificação de extintores:', { extintores, extintoresError });
 
       if (extintoresError) throw extintoresError;
 
@@ -163,11 +167,14 @@ export default function Locais() {
         return;
       }
 
-      // Se não há extintores, proceder com a exclusão
-      const { error } = await supabase
+      // Se não há extintores, proceder com a exclusão - usar active = false em vez de DELETE
+      const { data, error } = await supabase
         .from('locations')
-        .delete()
-        .eq('id', localToDelete.id);
+        .update({ active: false })
+        .eq('id', localToDelete.id)
+        .select();
+
+      console.log('Resultado da "exclusão" (desativação):', { data, error });
 
       if (error) throw error;
 
