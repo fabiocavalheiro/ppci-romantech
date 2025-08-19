@@ -270,7 +270,11 @@ export function NovoLocalDialog({
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={saving}>
+                <Button 
+                  type="submit" 
+                  disabled={saving || clients.length === 0}
+                  title={clients.length === 0 ? "Nenhum cliente disponível" : ""}
+                >
                   {saving ? "Criando..." : "Criar Local"}
                 </Button>
               </div>
