@@ -196,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const adminRoutes = ['/dashboard', '/calendario', '/relatorios', '/clientes', '/locais', '/usuarios', '/configuracoes'];
     
     // Rotas permitidas para cliente
-    const clienteRoutes = ['/dashboard', '/calendario', '/relatorios', '/locais'];
+    const clienteRoutes = ['/dashboard', '/calendario', '/relatorios'];
     
     if (isAdmin()) {
       return adminRoutes.includes(route);

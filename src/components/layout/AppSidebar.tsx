@@ -50,7 +50,7 @@ const allNavigation = [
     name: "Locais",
     href: "/locais",
     icon: MapPin,
-    roles: ["admin", "cliente"] // Cliente vê apenas seus locais
+    roles: ["admin"] // Apenas admin pode gerenciar locais
   },
   {
     name: "Usuários",
