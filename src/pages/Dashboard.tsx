@@ -12,6 +12,7 @@ import { RecentActivities } from "@/components/dashboard/RecentActivities";
 import { EquipmentEditDialog } from "@/components/dashboard/EquipmentEditDialog";
 import { ExtintoresEditDialog } from "@/components/dashboard/ExtintoresEditDialog";
 import { ExtintoresStatusDialog } from "@/components/dashboard/ExtintoresStatusDialog";
+import { AdicionarExtintorDialog } from "@/components/dashboard/AdicionarExtintorDialog";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,6 +79,8 @@ export default function Dashboard() {
     title: string;
   } | null>(null);
 
+  const [adicionarExtintorDialog, setAdicionarExtintorDialog] = useState(false);
+
   useEffect(() => {
     loadExtintoresData();
   }, []);
@@ -119,37 +122,9 @@ export default function Dashboard() {
   const handleCardClick = async (index: number) => {
     const equipment = equipmentData[index];
     
-    // Se for extintores, usar dados do primeiro local disponível
+    // Se for extintores, abrir dialog para adicionar extintor
     if (equipment.title === "Extintores") {
-      try {
-        const { data: locaisData, error } = await supabase
-          .from('locations')
-          .select('id, name')
-          .eq('active', true)
-          .limit(1);
-
-        if (error) throw error;
-
-        if (locaisData && locaisData.length > 0) {
-          setEditingExtintores({
-            localId: locaisData[0].id,
-            localName: locaisData[0].name
-          });
-        } else {
-          toast({
-            title: "Aviso",
-            description: "Nenhum local encontrado. Crie um local primeiro.",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        console.error('Erro ao buscar locais:', error);
-        toast({
-          title: "Erro",
-          description: "Erro ao buscar locais disponíveis.",
-          variant: "destructive",
-        });
-      }
+      setAdicionarExtintorDialog(true);
     } else {
       setEditingEquipment({
         index,
@@ -277,6 +252,15 @@ export default function Dashboard() {
                 onClose={() => setExtintoresStatusDialog(null)}
                 status={extintoresStatusDialog.status}
                 title={extintoresStatusDialog.title}
+              />
+            )}
+
+            {/* Adicionar Extintor Dialog */}
+            {adicionarExtintorDialog && (
+              <AdicionarExtintorDialog
+                isOpen={adicionarExtintorDialog}
+                onClose={() => setAdicionarExtintorDialog(false)}
+                onExtintorAdded={loadExtintoresData}
               />
             )}
           </div>
