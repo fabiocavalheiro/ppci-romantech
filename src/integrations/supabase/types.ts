@@ -206,6 +206,59 @@ export type Database = {
           },
         ]
       }
+      extintores: {
+        Row: {
+          created_at: string
+          id: string
+          local_id: string
+          localizacao_texto: string | null
+          numero: number
+          observacoes: string | null
+          proxima_inspecao: string | null
+          responsavel_manutencao: string | null
+          status: Database["public"]["Enums"]["equipment_status"]
+          tipo: Database["public"]["Enums"]["extintor_type"]
+          ultima_inspecao: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          local_id: string
+          localizacao_texto?: string | null
+          numero: number
+          observacoes?: string | null
+          proxima_inspecao?: string | null
+          responsavel_manutencao?: string | null
+          status?: Database["public"]["Enums"]["equipment_status"]
+          tipo?: Database["public"]["Enums"]["extintor_type"]
+          ultima_inspecao?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          local_id?: string
+          localizacao_texto?: string | null
+          numero?: number
+          observacoes?: string | null
+          proxima_inspecao?: string | null
+          responsavel_manutencao?: string | null
+          status?: Database["public"]["Enums"]["equipment_status"]
+          tipo?: Database["public"]["Enums"]["extintor_type"]
+          ultima_inspecao?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "extintores_local_id_fkey"
+            columns: ["local_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fire_extinguishers: {
         Row: {
           capacity: string
@@ -452,6 +505,7 @@ export type Database = {
     }
     Enums: {
       equipment_status: "ok" | "warning" | "danger" | "expired"
+      extintor_type: "BC" | "ABC" | "CO2"
       user_role: "admin" | "cliente" | "tecnico"
     }
     CompositeTypes: {
@@ -581,6 +635,7 @@ export const Constants = {
   public: {
     Enums: {
       equipment_status: ["ok", "warning", "danger", "expired"],
+      extintor_type: ["BC", "ABC", "CO2"],
       user_role: ["admin", "cliente", "tecnico"],
     },
   },

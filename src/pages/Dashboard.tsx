@@ -10,6 +10,7 @@ import {
 import { StatusCard } from "@/components/dashboard/StatusCard";
 import { RecentActivities } from "@/components/dashboard/RecentActivities";
 import { EquipmentEditDialog } from "@/components/dashboard/EquipmentEditDialog";
+import { ExtintoresEditDialog } from "@/components/dashboard/ExtintoresEditDialog";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -63,11 +64,27 @@ export default function Dashboard() {
     };
   } | null>(null);
 
+  const [editingExtintores, setEditingExtintores] = useState<{
+    localId: string;
+    localName: string;
+  } | null>(null);
+
   const handleCardClick = (index: number) => {
-    setEditingEquipment({
-      index,
-      data: equipmentData[index]
-    });
+    const equipment = equipmentData[index];
+    
+    // Se for extintores, abrir modal específico
+    if (equipment.title === "Extintores") {
+      // Por enquanto usar um local fictício - depois integrar com dados reais
+      setEditingExtintores({
+        localId: "local-exemplo", // Seria dinâmico
+        localName: "Local Exemplo"
+      });
+    } else {
+      setEditingEquipment({
+        index,
+        data: equipment
+      });
+    }
   };
 
   const handleSaveEquipment = (updatedData: {
@@ -152,6 +169,16 @@ export default function Dashboard() {
               onClose={() => setEditingEquipment(null)}
               equipmentData={editingEquipment.data}
               onSave={handleSaveEquipment}
+            />
+          )}
+
+          {/* Extintores Edit Dialog */}
+          {editingExtintores && (
+            <ExtintoresEditDialog
+              isOpen={!!editingExtintores}
+              onClose={() => setEditingExtintores(null)}
+              localId={editingExtintores.localId}
+              localName={editingExtintores.localName}
             />
           )}
         </div>
