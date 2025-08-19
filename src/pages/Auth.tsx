@@ -96,10 +96,10 @@ export default function Auth() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            {settings.logo_url ? (
+            {settings?.logo_url ? (
               <img 
                 src={settings.logo_url} 
-                alt={settings.company_name || "RomanTech"} 
+                alt={settings?.company_name || "RomanTech"} 
                 className="h-20 w-auto object-contain"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = romanTechLogo;
@@ -113,7 +113,7 @@ export default function Auth() {
               />
             )}
           </div>
-          <h1 className="text-3xl font-bold">{settings.company_name || "RomanTech"}</h1>
+          <h1 className="text-3xl font-bold">{settings?.company_name || "RomanTech"}</h1>
           <p className="text-muted-foreground mt-2">
             Sistema de Gestão de Segurança contra Incêndio
           </p>
