@@ -10,17 +10,18 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
-  const { user, signIn, signUp, loading } = useAuth();
+  const { user, profile, signIn, signUp, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   // Navegar para dashboard se usuário estiver logado
   useEffect(() => {
-    if (user && !loading) {
+    if (user && profile && !loading) {
+      console.log('Redirecting to dashboard - User:', user.email, 'Profile:', profile);
       navigate('/dashboard', { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, profile, loading, navigate]);
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
