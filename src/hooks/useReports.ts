@@ -40,6 +40,7 @@ export const useReports = () => {
         .from('clients')
         .select('id, name')
         .eq('active', true)
+        .neq('name', 'Empresa Exemplo Ltda') // Filtrar empresa de exemplo
         .order('name');
 
       if (error) throw error;
