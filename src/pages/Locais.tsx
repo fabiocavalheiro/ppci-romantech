@@ -171,13 +171,15 @@ export default function Locais() {
 
       if (error) throw error;
 
+      // Atualizar a lista local imediatamente removendo o local excluído
+      setLocais(prevLocais => prevLocais.filter(local => local.id !== localToDelete.id));
+
       toast({
         title: "Sucesso",
         description: `Local "${localToDelete.name}" excluído com sucesso.`,
       });
 
       setLocalToDelete(null);
-      loadLocais();
     } catch (error: any) {
       console.error('Erro ao excluir local:', error);
       toast({
