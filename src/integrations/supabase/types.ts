@@ -500,10 +500,6 @@ export type Database = {
       }
       get_user_role: {
         Args: { user_id: string }
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      get_user_role_temp: {
-        Args: { user_id: string }
         Returns: string
       }
     }
