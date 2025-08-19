@@ -1,0 +1,7 @@
+-- Inserir clientes reais de exemplo para o sistema (usando CNPJs únicos)
+INSERT INTO public.clients (name, cnpj, email, phone, contact_person, address, active) VALUES 
+('Empresas Reunidas Paulista Ltda', '11.222.333/0001-44', 'contato@empresasreunidas.com.br', '(11) 3456-7890', 'João Silva', '{"street": "Av. Paulista, 1500", "city": "São Paulo", "state": "SP", "zip": "01310-100"}', true),
+('Indústria Metalúrgica ABC S.A.', '22.333.444/0001-55', 'comercial@metalurgicaabc.com.br', '(11) 2345-6789', 'Maria Santos', '{"street": "Rua Industrial, 2000", "city": "São Bernardo do Campo", "state": "SP", "zip": "09606-000"}', true),
+('Comércio de Materiais São José Ltda', '33.444.555/0001-66', 'vendas@materiaissjose.com.br', '(21) 3456-7890', 'Carlos Lima', '{"street": "Av. Brasil, 3500", "city": "Rio de Janeiro", "state": "RJ", "zip": "21040-020"}', true),
+('Hospital Santa Maria', '44.555.666/0001-77', 'admin@hospitalsantamaria.com.br', '(11) 4567-8901', 'Ana Costa', '{"street": "Rua da Saúde, 800", "city": "São Paulo", "state": "SP", "zip": "04038-001"}', true),
+('Shopping Center Vila Real', '55.666.777/0001-88', 'administracao@shoppingvilareal.com.br', '(11) 5678-9012', 'Pedro Oliveira', '{"street": "Av. das Américas, 1200", "city": "São Paulo", "state": "SP", "zip": "05466-000"}', true);
