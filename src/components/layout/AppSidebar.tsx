@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobileOrTablet } from "@/hooks/use-mobile";
 import {
   Sidebar,
   SidebarContent,
@@ -70,6 +71,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const { profile } = useAuth();
+  const isMobileOrTablet = useIsMobileOrTablet();
 
   const navigation = allNavigation.filter(item => 
     profile && item.roles.includes(profile.role)
@@ -85,7 +87,8 @@ export function AppSidebar() {
   return (
     <Sidebar
       className={state === "collapsed" ? "w-16" : "w-64"}
-      collapsible="icon"
+      collapsible={isMobileOrTablet ? "offcanvas" : "icon"}
+      variant={isMobileOrTablet ? "floating" : "sidebar"}
     >
       <SidebarContent>
         <SidebarGroup className="py-4">
