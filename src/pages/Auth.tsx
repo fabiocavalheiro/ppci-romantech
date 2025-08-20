@@ -20,11 +20,12 @@ export default function Auth() {
 
   // Navegar para dashboard se usuário estiver logado
   useEffect(() => {
-    if (user && profile && !loading) {
+    if (user && !loading) {
       console.log('User authenticated, redirecting to dashboard');
-      window.location.href = '/dashboard';
+      // Usar replace com hash para forçar a navegação no Chrome Android
+      window.location.replace('/dashboard#loaded');
     }
-  }, [user, profile, loading]);
+  }, [user, loading]);
 
   // Mostrar loading enquanto verifica autenticação ou carrega configurações
   if (loading || settingsLoading) {

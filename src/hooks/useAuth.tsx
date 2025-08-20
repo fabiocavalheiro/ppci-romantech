@@ -48,8 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile
-          setTimeout(async () => {
+          // Fetch user profile imediatamente, de forma síncrona
+          try {
             console.log('Fetching profile for user:', session.user.id);
             const { data: profile, error } = await supabase
               .from('profiles')
@@ -64,8 +64,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
             
             setProfile(profile as Profile);
-            setLoading(false);
-          }, 0);
+          } catch (error) {
+            console.error('Error fetching profile:', error);
+          }
+          
+          setLoading(false);
         } else {
           setProfile(null);
           setLoading(false);
