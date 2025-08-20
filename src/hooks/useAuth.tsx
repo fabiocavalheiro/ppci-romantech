@@ -57,21 +57,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .from('profiles')
               .select('*')
               .eq('user_id', session.user.id)
-              .maybeSingle();
+              .single();
             
             if (error) {
-              console.error('Error fetching profile:', error.message, error);
+              console.error('Error fetching profile:', error);
+              // Se não encontrar perfil, tentar criar um
+              if (error.code === 'PGRST116') {
+                console.log('Profile not found, creating one...');
+                const { data: newProfile, error: createError } = await supabase
+                  .from('profiles')
+                  .insert({
+                    user_id: session.user.id,
+                    full_name: session.user.user_metadata?.full_name || session.user.email || 'Usuário',
+                    email: session.user.email || '',
+                    role: 'cliente'
+                  })
+                  .select()
+                  .single();
+                
+                if (createError) {
+                  console.error('Error creating profile:', createError);
+                  setProfile(null);
+                } else {
+                  console.log('Profile created:', newProfile);
+                  setProfile(newProfile as Profile);
+                }
+              } else {
+                setProfile(null);
+              }
             } else {
               console.log('Profile fetched:', profile);
+              setProfile(profile as Profile);
             }
-            
-            setProfile(profile as Profile);
-            setLoading(false);
           } catch (fetchError) {
             console.error('Network error fetching profile:', fetchError);
             setProfile(null);
-            setLoading(false);
           }
+          setLoading(false);
         } else {
           setProfile(null);
           setLoading(false);
@@ -80,100 +102,122 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+          setLoading(false);
+          return;
+        }
+        
+        if (!session) {
+          setLoading(false);
+        }
+        // Se há sessão, o listener onAuthStateChange vai lidar com ela
+      } catch (error) {
+        console.error('Network error getting session:', error);
         setLoading(false);
-        return;
       }
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (!session) {
-        setLoading(false);
-      }
-    }).catch((error) => {
-      console.error('Network error getting session:', error);
-      setLoading(false);
-    });
+    };
+    
+    initializeAuth();
 
     return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
     console.log('Attempting sign in for:', email);
+    setLoading(true);
     
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (error) {
-      console.error('SignIn error:', error.message);
-    } else {
+    try {
+      const { error, data } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('SignIn error:', error);
+        setLoading(false);
+        return { error };
+      }
+      
       console.log('SignIn successful:', data.user?.email);
+      // O loading será definido como false pelo listener onAuthStateChange
+      return { error: null };
+    } catch (networkError) {
+      console.error('Network error during sign in:', networkError);
+      setLoading(false);
+      return { error: { message: 'Erro de conexão. Verifique sua internet.' } };
     }
-    
-    return { error };
   };
 
   const signUp = async (email: string, password: string, fullName: string, empresaId: string) => {
-    // Primeiro validar se a empresa existe e está ativa
-    const { data: empresa, error: empresaError } = await supabase
-      .from('empresas')
-      .select('id, status')
-      .eq('id', empresaId)
-      .eq('status', 'ativo')
-      .maybeSingle();
-
-    if (empresaError || !empresa) {
-      return { 
-        error: { 
-          message: 'Sua empresa ainda não está cadastrada ou está inativa. Contate o administrador.' 
-        } 
-      };
-    }
-
-    const redirectUrl = `${window.location.origin}/`;
+    setLoading(true);
     
-    const { error, data } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
-        }
+    try {
+      // Primeiro validar se a empresa existe e está ativa
+      const { data: empresa, error: empresaError } = await supabase
+        .from('empresas')
+        .select('id, status')
+        .eq('id', empresaId)
+        .eq('status', 'ativo')
+        .maybeSingle();
+
+      if (empresaError || !empresa) {
+        setLoading(false);
+        return { 
+          error: { 
+            message: 'Sua empresa ainda não está cadastrada ou está inativa. Contate o administrador.' 
+          } 
+        };
       }
-    });
-    
-    // Se o cadastro foi bem-sucedido e o usuário foi criado, criar o perfil manualmente
-    if (!error && data.user) {
-      try {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            user_id: data.user.id,
+
+      const { error, data } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
             full_name: fullName,
-            email: email,
-            empresa_id: empresaId,
-            role: 'cliente'
-          });
-        
-        if (profileError) {
+            empresa_id: empresaId
+          }
+        }
+      });
+      
+      if (error) {
+        console.error('SignUp error:', error);
+        setLoading(false);
+        return { error };
+      }
+      
+      // Se o cadastro foi bem-sucedido e o usuário foi criado, criar o perfil manualmente
+      if (data.user) {
+        try {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              user_id: data.user.id,
+              full_name: fullName,
+              email: email,
+              empresa_id: empresaId,
+              role: 'cliente'
+            });
+          
+          if (profileError) {
+            console.error('Error creating profile:', profileError);
+          }
+        } catch (profileError) {
           console.error('Error creating profile:', profileError);
         }
-      } catch (profileError) {
-        console.error('Error creating profile:', profileError);
       }
+      
+      setLoading(false);
+      return { error: null, data };
+    } catch (networkError) {
+      console.error('Network error during sign up:', networkError);
+      setLoading(false);
+      return { error: { message: 'Erro de conexão. Verifique sua internet.' } };
     }
-    
-    if (error) {
-      console.error('SignUp error:', error.message);
-    } else if (data.user && !data.user.email_confirmed_at) {
-      console.log('Email confirmation required for:', email);
-    }
-    
-    return { error, data };
   };
 
   const signOut = async () => {

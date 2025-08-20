@@ -87,17 +87,27 @@ export default function Auth() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
-    const { error } = await signIn(email, password);
-    
-    if (error) {
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        toast({
+          title: "Erro no login",
+          description: error.message || "Credenciais inválidas",
+          variant: "destructive",
+        });
+      }
+      // Se não há erro, o redirecionamento será feito pelo useEffect no useAuth
+    } catch (error) {
+      console.error('Erro inesperado no login:', error);
       toast({
         title: "Erro no login",
-        description: error.message,
+        description: "Erro inesperado. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -113,36 +123,45 @@ export default function Auth() {
       toast({
         title: "Empresa obrigatória",
         description: "Por favor, selecione uma empresa para continuar.",
-        variant: "destructive"
+        variant: "destructive",
       });
       setIsLoading(false);
       return;
     }
 
-    const { error, data } = await signUp(email, password, fullName, selectedEmpresa);
-    
-    if (error) {
-      console.error('Signup error details:', error);
-      toast({
-        title: "Erro no cadastro",
-        description: error.message || "Erro desconhecido durante o cadastro",
-        variant: "destructive",
-      });
-    } else {
-      if (data?.user && !data.user.email_confirmed_at) {
+    try {
+      const { error, data } = await signUp(email, password, fullName, selectedEmpresa);
+      
+      if (error) {
+        console.error('Signup error details:', error);
         toast({
-          title: "Cadastro realizado!",
-          description: "Verifique seu email para confirmar a conta e fazer login.",
+          title: "Erro no cadastro",
+          description: error.message || "Erro desconhecido durante o cadastro",
+          variant: "destructive",
         });
       } else {
-        toast({
-          title: "Cadastro realizado!",
-          description: "Sua conta foi criada com sucesso.",
-        });
+        if (data?.user && !data.user.email_confirmed_at) {
+          toast({
+            title: "Cadastro realizado!",
+            description: "Verifique seu email para confirmar a conta e fazer login.",
+          });
+        } else {
+          toast({
+            title: "Cadastro realizado!",
+            description: "Sua conta foi criada com sucesso.",
+          });
+        }
       }
+    } catch (error) {
+      console.error('Erro inesperado no cadastro:', error);
+      toast({
+        title: "Erro no cadastro",
+        description: "Erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
