@@ -13,7 +13,7 @@ export function RoleProtectedRoute({
   allowedRoles = [], 
   redirectTo = '/dashboard' 
 }: RoleProtectedRouteProps) {
-  const { profile, loading, canAccessRoute } = useAuth();
+  const { profile, loading, canAccessRoute, checkEmpresaStatus } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -44,7 +44,17 @@ export function RoleProtectedRoute({
       navigate(redirectTo);
       return;
     }
-  }, [profile, loading, location.pathname, allowedRoles, canAccessRoute, navigate, redirectTo]);
+
+    // Verificar se a empresa está ativa (apenas para clientes)
+    if (profile.role === 'cliente' && profile.empresa_id) {
+      checkEmpresaStatus().then(isActive => {
+        if (!isActive) {
+          console.warn(`Acesso negado: empresa inativa para usuário ${profile.email}`);
+          navigate('/auth');
+        }
+      });
+    }
+  }, [profile, loading, location.pathname, allowedRoles, canAccessRoute, checkEmpresaStatus, navigate, redirectTo]);
 
   if (loading) {
     return (

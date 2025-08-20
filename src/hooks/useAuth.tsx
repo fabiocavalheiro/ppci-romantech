@@ -29,6 +29,7 @@ interface AuthContextType {
   canAccessRoute: (route: string) => boolean;
   canManageUsers: () => boolean;
   canSeeAllClients: () => boolean;
+  checkEmpresaStatus: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -211,7 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!profile) return false;
     
     // Rotas permitidas para admin
-    const adminRoutes = ['/dashboard', '/calendario', '/relatorios', '/clientes', '/locais', '/usuarios', '/configuracoes'];
+    const adminRoutes = ['/dashboard', '/calendario', '/relatorios', '/clientes', '/empresas', '/locais', '/usuarios', '/configuracoes'];
     
     // Rotas permitidas para cliente
     const clienteRoutes = ['/dashboard', '/calendario', '/relatorios'];
@@ -229,6 +230,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const canManageUsers = () => {
     return isAdmin();
+  };
+
+  const checkEmpresaStatus = async (): Promise<boolean> => {
+    if (!profile?.empresa_id) return true; // Admin sem empresa sempre pode acessar
+    
+    try {
+      const { data: empresa, error } = await supabase
+        .from('empresas')
+        .select('status')
+        .eq('id', profile.empresa_id)
+        .maybeSingle();
+        
+      if (error || !empresa) {
+        console.error('Error checking empresa status:', error);
+        return false;
+      }
+      
+      return empresa.status === 'ativo';
+    } catch (error) {
+      console.error('Error checking empresa status:', error);
+      return false;
+    }
   };
 
   const canSeeAllClients = () => {
@@ -249,7 +272,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isCliente,
       canAccessRoute,
       canManageUsers,
-      canSeeAllClients
+      canSeeAllClients,
+      checkEmpresaStatus
     }}>
       {children}
     </AuthContext.Provider>
