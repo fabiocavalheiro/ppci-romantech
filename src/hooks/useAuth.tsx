@@ -43,59 +43,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile
-          try {
-            console.log('Fetching profile for user:', session.user.id);
-            const { data: profile, error } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .single();
-            
-            if (error) {
-              console.error('Error fetching profile:', error);
-              // Se não encontrar perfil, tentar criar um
-              if (error.code === 'PGRST116') {
-                console.log('Profile not found, creating one...');
-                const { data: newProfile, error: createError } = await supabase
-                  .from('profiles')
-                  .insert({
-                    user_id: session.user.id,
-                    full_name: session.user.user_metadata?.full_name || session.user.email || 'Usuário',
-                    email: session.user.email || '',
-                    role: 'cliente'
-                  })
-                  .select()
-                  .single();
-                
-                if (createError) {
-                  console.error('Error creating profile:', createError);
-                  setProfile(null);
-                } else {
-                  console.log('Profile created:', newProfile);
-                  setProfile(newProfile as Profile);
-                }
-              } else {
+          setTimeout(async () => {
+            try {
+              const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .single();
+              
+              if (error) {
+                console.error('Error fetching profile:', error);
                 setProfile(null);
+              } else {
+                setProfile(profile as Profile);
               }
-            } else {
-              console.log('Profile fetched successfully:', profile);
-              setProfile(profile as Profile);
+            } catch (fetchError) {
+              console.error('Network error fetching profile:', fetchError);
+              setProfile(null);
             }
-          } catch (fetchError) {
-            console.error('Network error fetching profile:', fetchError);
-            setProfile(null);
-          }
-          setLoading(false);
+          }, 0);
         } else {
           setProfile(null);
-          setLoading(false);
         }
+        setLoading(false);
       }
     );
 
@@ -112,7 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!session) {
           setLoading(false);
         }
-        // Se há sessão, o listener onAuthStateChange vai lidar com ela
       } catch (error) {
         console.error('Network error getting session:', error);
         setLoading(false);
