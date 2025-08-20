@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setProfile(null);
               }
             } else {
-              console.log('Profile fetched:', profile);
+              console.log('Profile fetched successfully:', profile);
               setProfile(profile as Profile);
             }
           } catch (fetchError) {
@@ -261,22 +261,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const canAccessRoute = (route: string) => {
-    if (!profile) return false;
+    if (!profile) {
+      console.log('canAccessRoute: No profile available');
+      return false;
+    }
+    
+    console.log(`canAccessRoute: Checking access for ${profile.role} to ${route}`);
     
     // Rotas permitidas para admin
     const adminRoutes = ['/dashboard', '/calendario', '/relatorios', '/clientes', '/empresas', '/locais', '/usuarios', '/configuracoes'];
     
-    // Rotas permitidas para cliente
-    const clienteRoutes = ['/dashboard', '/calendario', '/relatorios'];
+    // Rotas permitidas para cliente  
+    const clienteRoutes = ['/dashboard', '/calendario', '/relatorios', '/locais'];
     
     if (isAdmin()) {
-      return adminRoutes.includes(route);
+      const hasAccess = adminRoutes.includes(route);
+      console.log(`canAccessRoute: Admin access to ${route}: ${hasAccess}`);
+      return hasAccess;
     }
     
     if (isCliente()) {
-      return clienteRoutes.includes(route);
+      const hasAccess = clienteRoutes.includes(route);
+      console.log(`canAccessRoute: Cliente access to ${route}: ${hasAccess}`);
+      return hasAccess;
     }
     
+    console.log(`canAccessRoute: Unknown role ${profile.role}, denying access`);
     return false;
   };
 

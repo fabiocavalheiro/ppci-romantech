@@ -13,6 +13,7 @@ export function AuthRoute({ children }: AuthRouteProps) {
 
   useEffect(() => {
     if (!loading && user) {
+      console.log('AuthRoute: User is authenticated, redirecting to dashboard');
       navigate('/dashboard', { replace: true });
     }
   }, [user, loading, navigate]);
