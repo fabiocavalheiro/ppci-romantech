@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 
 interface Profile {
   id: string;
@@ -39,7 +38,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener
@@ -239,16 +237,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       console.log('Logout realizado com sucesso');
       
-      // Redirecionar para página de auth
-      navigate('/auth', { replace: true });
+      // O redirecionamento será tratado pelo componente que chama signOut
     } catch (error) {
       console.error('Erro durante o logout:', error);
       
-      // Mesmo com erro, limpar estados e redirecionar
+      // Mesmo com erro, limpar estados
       setUser(null);
       setProfile(null);
       setSession(null);
-      navigate('/auth', { replace: true });
     }
   };
 

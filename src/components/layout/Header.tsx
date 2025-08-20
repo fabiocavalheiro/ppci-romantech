@@ -68,6 +68,7 @@ export function Header() {
     setIsLoggingOut(true);
     try {
       await signOut();
+      window.location.href = '/auth';
     } catch (error) {
       console.error('Erro no logout:', error);
     } finally {
