@@ -20,44 +20,11 @@ export default function Auth() {
 
   // Navegar para dashboard se usuário estiver logado
   useEffect(() => {
-    if (user && !loading) {
-      console.log('User authenticated, preparing redirect...');
-      
-      // Para Chrome mobile, usar uma abordagem mais direta
-      const handleRedirect = () => {
-        console.log('Redirecting to dashboard - User:', user.email);
-        
-        // Tentar navegação programática primeiro
-        try {
-          navigate('/dashboard', { replace: true });
-          
-          // Verificar se a navegação funcionou no Chrome mobile
-          setTimeout(() => {
-            if (window.location.pathname === '/auth') {
-              console.log('Navigation failed, using window.location');
-              window.location.replace('/dashboard');
-            }
-          }, 500);
-        } catch (error) {
-          console.error('Navigation error:', error);
-          window.location.replace('/dashboard');
-        }
-      };
-
-      // Se já tem profile, redirecionar imediatamente
-      if (profile) {
-        handleRedirect();
-      } else {
-        // Aguardar profile por um tempo limitado
-        const timer = setTimeout(() => {
-          console.log('Redirecting without profile check for Chrome compatibility');
-          handleRedirect();
-        }, 800);
-
-        return () => clearTimeout(timer);
-      }
+    if (user && profile && !loading) {
+      console.log('User authenticated, redirecting to dashboard');
+      window.location.href = '/dashboard';
     }
-  }, [user, profile, loading, navigate]);
+  }, [user, profile, loading]);
 
   // Mostrar loading enquanto verifica autenticação ou carrega configurações
   if (loading || settingsLoading) {
