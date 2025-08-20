@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile - usar setTimeout para evitar deadlock
-          setTimeout(async () => {
+          // Fetch user profile
+          try {
             console.log('Fetching profile for user:', session.user.id);
             const { data: profile, error } = await supabase
               .from('profiles')
@@ -60,14 +60,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               .maybeSingle();
             
             if (error) {
-              console.error('Error fetching profile:', error);
+              console.error('Error fetching profile:', error.message, error);
             } else {
               console.log('Profile fetched:', profile);
             }
             
             setProfile(profile as Profile);
             setLoading(false);
-          }, 0);
+          } catch (fetchError) {
+            console.error('Network error fetching profile:', fetchError);
+            setProfile(null);
+            setLoading(false);
+          }
         } else {
           setProfile(null);
           setLoading(false);
@@ -76,12 +80,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error);
+        setLoading(false);
+        return;
+      }
       setSession(session);
       setUser(session?.user ?? null);
       if (!session) {
         setLoading(false);
       }
+    }).catch((error) => {
+      console.error('Network error getting session:', error);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
