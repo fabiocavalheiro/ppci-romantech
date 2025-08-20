@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Plus, MapPin, Edit, Trash2 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -210,19 +210,16 @@ export default function Locais() {
 
   if (loading) {
     return (
-      <ProtectedRoute>
-        <Layout>
+      <Layout>
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         </Layout>
-      </ProtectedRoute>
     );
   }
 
   return (
-    <ProtectedRoute>
-      <Layout>
+    <Layout>
         <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
           {/* Header */}
           <div className="flex flex-col space-y-2">
@@ -447,6 +444,5 @@ export default function Locais() {
           </AlertDialog>
         </div>
       </Layout>
-    </ProtectedRoute>
   );
 }

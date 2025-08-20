@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -91,8 +91,7 @@ export default function Configuracoes() {
     });
   };
   return (
-    <ProtectedRoute>
-      <Layout>
+    <Layout>
         <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
           <div className="flex items-center justify-between space-y-2">
             <div>
@@ -293,6 +292,5 @@ export default function Configuracoes() {
           </div>
         </div>
       </Layout>
-    </ProtectedRoute>
   );
 }

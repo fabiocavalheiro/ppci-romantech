@@ -14,7 +14,7 @@ import { ExtintoresEditDialog } from "@/components/dashboard/ExtintoresEditDialo
 import { ExtintoresStatusDialog } from "@/components/dashboard/ExtintoresStatusDialog";
 import { AdicionarExtintorDialog } from "@/components/dashboard/AdicionarExtintorDialog";
 import { Layout } from "@/components/layout/Layout";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -161,8 +161,7 @@ export default function Dashboard() {
   };
 
   return (
-    <ProtectedRoute>
-      <Layout>
+    <Layout>
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -266,6 +265,5 @@ export default function Dashboard() {
           </div>
         )}
       </Layout>
-    </ProtectedRoute>
   );
 }

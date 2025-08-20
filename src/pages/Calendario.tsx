@@ -1,5 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -113,8 +113,7 @@ export default function Calendario() {
   };
 
   return (
-    <ProtectedRoute>
-      <Layout>
+    <Layout>
         <div className="flex-1 space-y-4 p-4 md:p-6 lg:p-8 pt-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
             <div>
@@ -202,6 +201,5 @@ export default function Calendario() {
           </div>
         </div>
       </Layout>
-    </ProtectedRoute>
   );
 }
