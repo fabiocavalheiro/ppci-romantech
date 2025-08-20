@@ -11,6 +11,7 @@ interface Profile {
   phone?: string;
   role: string;
   client_id?: string;
+  empresa_id?: string;
   active: boolean;
 }
 
@@ -20,7 +21,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error: any; data?: any }>;
+  signUp: (email: string, password: string, fullName: string, empresaId: string) => Promise<{ error: any; data?: any }>;
   signOut: () => Promise<void>;
   hasRole: (roles: string[]) => boolean;
   isAdmin: () => boolean;
@@ -102,7 +103,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { error };
   };
 
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = async (email: string, password: string, fullName: string, empresaId: string) => {
+    // Primeiro validar se a empresa existe e está ativa
+    const { data: empresa, error: empresaError } = await supabase
+      .from('empresas')
+      .select('id, status')
+      .eq('id', empresaId)
+      .eq('status', 'ativo')
+      .maybeSingle();
+
+    if (empresaError || !empresa) {
+      return { 
+        error: { 
+          message: 'Sua empresa ainda não está cadastrada ou está inativa. Contate o administrador.' 
+        } 
+      };
+    }
+
     const redirectUrl = `${window.location.origin}/`;
     
     const { error, data } = await supabase.auth.signUp({
@@ -121,10 +138,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { error: profileError } = await supabase
           .from('profiles')
-          .insert({
+          .upsert({
             user_id: data.user.id,
             full_name: fullName,
             email: email,
+            empresa_id: empresaId,
             role: 'cliente'
           });
         

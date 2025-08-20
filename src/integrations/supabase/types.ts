@@ -256,6 +256,30 @@ export type Database = {
           },
         ]
       }
+      empresas: {
+        Row: {
+          cnpj: string | null
+          created_at: string
+          id: string
+          nome: string
+          status: string
+        }
+        Insert: {
+          cnpj?: string | null
+          created_at?: string
+          id?: string
+          nome: string
+          status?: string
+        }
+        Update: {
+          cnpj?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          status?: string
+        }
+        Relationships: []
+      }
       extintores: {
         Row: {
           created_at: string
@@ -462,6 +486,7 @@ export type Database = {
           client_id: string | null
           created_at: string
           email: string
+          empresa_id: string | null
           full_name: string
           id: string
           phone: string | null
@@ -474,6 +499,7 @@ export type Database = {
           client_id?: string | null
           created_at?: string
           email: string
+          empresa_id?: string | null
           full_name: string
           id?: string
           phone?: string | null
@@ -486,6 +512,7 @@ export type Database = {
           client_id?: string | null
           created_at?: string
           email?: string
+          empresa_id?: string | null
           full_name?: string
           id?: string
           phone?: string | null
@@ -499,6 +526,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
             referencedColumns: ["id"]
           },
         ]

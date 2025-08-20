@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import Calendario from "./pages/Calendario";
 import Relatorios from "./pages/Relatorios";
 import Clientes from "./pages/Clientes";
+import Empresas from "./pages/Empresas";
 import Locais from "./pages/Locais";
 import Usuarios from "./pages/Usuarios";
 import Configuracoes from "./pages/Configuracoes";
@@ -61,6 +62,15 @@ const App = () => (
               element={
                 <RoleProtectedRoute allowedRoles={['admin']}>
                   <Clientes />
+                </RoleProtectedRoute>
+              } 
+            />
+            
+            <Route 
+              path="/empresas" 
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Empresas />
                 </RoleProtectedRoute>
               } 
             />

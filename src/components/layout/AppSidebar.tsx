@@ -3,6 +3,7 @@ import {
   Calendar, 
   FileText, 
   Building2, 
+  Building,
   MapPin, 
   Settings,
   Users
@@ -46,6 +47,12 @@ const allNavigation = [
     href: "/clientes",
     icon: Building2,
     roles: ["admin"] // Apenas admin pode ver todos os clientes
+  },
+  {
+    name: "Empresas",
+    href: "/empresas",
+    icon: Building,
+    roles: ["admin"] // Apenas admin pode gerenciar empresas
   },
   {
     name: "Locais",

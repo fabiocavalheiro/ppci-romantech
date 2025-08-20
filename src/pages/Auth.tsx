@@ -6,10 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import romanTechLogo from '@/assets/romantech-logo.png';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Empresa {
+  id: string;
+  nome: string;
+  cnpj?: string;
+  status: string;
+}
 
 export default function Auth() {
   const { user, profile, signIn, signUp, loading } = useAuth();
@@ -17,6 +27,9 @@ export default function Auth() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [selectedEmpresa, setSelectedEmpresa] = useState<string>("");
+  const [empresasLoading, setEmpresasLoading] = useState(false);
 
   // Navegar para dashboard se usuário estiver logado
   useEffect(() => {
@@ -26,6 +39,36 @@ export default function Auth() {
       window.location.replace('/dashboard#loaded');
     }
   }, [user, loading]);
+
+  useEffect(() => {
+    fetchEmpresas();
+  }, []);
+
+  const fetchEmpresas = async () => {
+    setEmpresasLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('empresas')
+        .select('id, nome, cnpj, status')
+        .eq('status', 'ativo')
+        .order('nome');
+
+      if (error) {
+        console.error('Error fetching empresas:', error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as empresas.",
+          variant: "destructive"
+        });
+      } else {
+        setEmpresas(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching empresas:', error);
+    } finally {
+      setEmpresasLoading(false);
+    }
+  };
 
   // Mostrar loading enquanto verifica autenticação ou carrega configurações
   if (loading || settingsLoading) {
@@ -66,7 +109,17 @@ export default function Auth() {
     const password = formData.get('password') as string;
     const fullName = formData.get('fullName') as string;
 
-    const { error, data } = await signUp(email, password, fullName);
+    if (!selectedEmpresa) {
+      toast({
+        title: "Empresa obrigatória",
+        description: "Por favor, selecione uma empresa para continuar.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const { error, data } = await signUp(email, password, fullName, selectedEmpresa);
     
     if (error) {
       console.error('Signup error details:', error);
@@ -177,6 +230,28 @@ export default function Auth() {
               <form onSubmit={handleSignUp}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="empresa">Empresa *</Label>
+                    <Select value={selectedEmpresa} onValueChange={setSelectedEmpresa}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={empresasLoading ? "Carregando..." : "Selecione sua empresa"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {empresas.map((empresa) => (
+                          <SelectItem key={empresa.id} value={empresa.id}>
+                            {empresa.nome} {empresa.cnpj && `- ${empresa.cnpj}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {empresas.length === 0 && !empresasLoading && (
+                      <Alert>
+                        <AlertDescription>
+                          Nenhuma empresa ativa encontrada. Contate o administrador para cadastrar sua empresa.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="fullName">Nome completo</Label>
                     <Input
                       id="fullName"
@@ -209,7 +284,11 @@ export default function Auth() {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoading || !selectedEmpresa || empresas.length === 0}
+                  >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Criar conta
                   </Button>
