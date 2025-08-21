@@ -640,6 +640,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: string[]
       }
+      get_user_client_ids_safe: {
+        Args: { user_id: string }
+        Returns: string[]
+      }
       get_user_empresa_id: {
         Args: { user_id: string }
         Returns: string
@@ -649,6 +653,10 @@ export type Database = {
         Returns: string
       }
       get_user_role: {
+        Args: { user_id: string }
+        Returns: string
+      }
+      get_user_role_safe: {
         Args: { user_id: string }
         Returns: string
       }
