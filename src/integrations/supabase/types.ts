@@ -636,6 +636,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: string
       }
+      get_user_role_temp: {
+        Args: { user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       client_type_enum: "residencial" | "comercial" | "industria"
