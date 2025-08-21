@@ -616,6 +616,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_brigade_members_for_client: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active: boolean
+          created_at: string
+          id: string
+          last_training: string
+          location_id: string
+          name: string
+          next_training: string
+          role: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          training_frequency_months: number
+          updated_at: string
+        }[]
+      }
       get_user_client_id: {
         Args: { user_id: string }
         Returns: string
