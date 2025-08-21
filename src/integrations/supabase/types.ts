@@ -613,10 +613,49 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      brigade_members_client_view: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string | null
+          last_training: string | null
+          location_id: string | null
+          name: string | null
+          next_training: string | null
+          role: string | null
+          status: Database["public"]["Enums"]["equipment_status"] | null
+          training_frequency_months: number | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brigade_members_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_brigade_members_for_client: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active: boolean
+          created_at: string
+          id: string
+          last_training: string
+          location_id: string
+          name: string
+          next_training: string
+          role: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          training_frequency_months: number
+          updated_at: string
+        }[]
+      }
+      get_brigade_members_for_client_safe: {
         Args: Record<PropertyKey, never>
         Returns: {
           active: boolean
