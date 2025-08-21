@@ -613,30 +613,7 @@ export type Database = {
       }
     }
     Views: {
-      brigade_members_client_view: {
-        Row: {
-          active: boolean | null
-          created_at: string | null
-          id: string | null
-          last_training: string | null
-          location_id: string | null
-          name: string | null
-          next_training: string | null
-          role: string | null
-          status: Database["public"]["Enums"]["equipment_status"] | null
-          training_frequency_months: number | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "brigade_members_location_id_fkey"
-            columns: ["location_id"]
-            isOneToOne: false
-            referencedRelation: "locations"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       get_brigade_members_for_client: {
@@ -702,6 +679,10 @@ export type Database = {
       get_user_role_temp: {
         Args: { user_id: string }
         Returns: string
+      }
+      log_sensitive_data_access: {
+        Args: { accessed_by?: string; operation: string; table_name: string }
+        Returns: undefined
       }
     }
     Enums: {
