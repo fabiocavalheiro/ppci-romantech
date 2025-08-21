@@ -648,6 +648,27 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_brigade_members_with_security: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          active: boolean
+          cpf: string
+          created_at: string
+          id: string
+          last_training: string
+          location_id: string
+          name: string
+          next_training: string
+          role: string
+          status: Database["public"]["Enums"]["equipment_status"]
+          training_frequency_months: number
+          updated_at: string
+        }[]
+      }
+      get_masked_cpf: {
+        Args: { original_cpf: string; user_role?: string }
+        Returns: string
+      }
       get_user_client_id: {
         Args: { user_id: string }
         Returns: string
